@@ -2,19 +2,18 @@
 
 Quick reference for all documentation files in the project.
 
-## 🚀 App Launch & Store Submission
+## 🚀 App Launch – Apple App Store (Canada)
 
-- **`APP_STORE_LAUNCH_GUIDE.md`** - Complete guide for launching on App Store and Google Play
-- **`APP_STORE_ASSETS_MYTACKLEBOX.md`** - App name, descriptions, and keywords for stores
-- **`APP_STORE_CONNECT_API_KEY_GUIDE.md`** - How to generate App Store Connect API keys for RevenueCat
-- **`APPLE_DEVELOPER_ACCOUNT_GUIDE.md`** - Clarifies Apple Developer Program requirements
-- **`DEPLOYMENT_GUIDE.md`** - Backend deployment guide
+- **`LAUNCH_CHECKLIST.md`** – **Start here.** Single step-by-step checklist to get My Tackle Box live on the Apple App Store (Canada only). In-App Purchases, app info, screenshots, RevenueCat, build, submit.
+- **`APP_STORE_ASSETS_MYTACKLEBOX.md`** – Optional: extra app name, descriptions, keywords (update to $4.99 / $39.99 and no lifetime if you use it).
+- **`APP_STORE_CONNECT_API_KEY_GUIDE.md`** – How to generate App Store Connect API keys for RevenueCat
+- **`APPLE_DEVELOPER_ACCOUNT_GUIDE.md`** – Apple Developer Program requirements
+- **`DEPLOYMENT_GUIDE.md`** – Backend deployment guide
 
 ## 💰 Subscriptions & RevenueCat
 
-- **`REVENUECAT_REACT_NATIVE_SETUP_COMPLETE.md`** - Complete RevenueCat setup guide for React Native
-- **`REVENUECAT_INTEGRATION_SUMMARY.md`** - Quick reference for RevenueCat integration
-- **`SUBSCRIPTION_SETUP_FOR_APP_STORES.md`** - How to create subscription products in stores
+- **`REVENUECAT_REACT_NATIVE_SETUP_COMPLETE.md`** – RevenueCat setup for React Native
+- **`REVENUECAT_INTEGRATION_SUMMARY.md`** – Quick reference for RevenueCat integration
 
 ## 📸 Screenshots
 
@@ -28,9 +27,7 @@ Quick reference for all documentation files in the project.
 
 ## ⚙️ Setup & Configuration
 
-- **`SUPABASE_KEEP_ALIVE_SETUP.md`** - Keep-alive setup for Supabase (if needed)
-- **`PRE_LAUNCH_CHECKLIST.md`** - Active checklist for pre-launch tasks
-- **`PRE_LAUNCH_COMPLETE_SUMMARY.md`** - Summary of completed pre-launch work
+- **`SUPABASE_KEEP_ALIVE_SETUP.md`** – Keep-alive setup for Supabase (if needed)
 
 ## 📄 Legal Documents
 
@@ -45,10 +42,10 @@ Quick reference for all documentation files in the project.
 
 ## 📱 App-Specific Documentation
 
-- **`FishingLureApp/README.md`** - Main app README
-- **`FishingLureApp/DEPLOYMENT_CHECKLIST.md`** - iOS deployment checklist
-- **`FishingLureApp/SUBSCRIPTION_SETUP.md`** - Subscription setup guide for app
-- **`FishingLureApp/SECURITY_AUDIT_REPORT.md`** - App security audit
+- **`FishingLureApp/README.md`** – Main app README
+- **`FishingLureApp/DEPLOYMENT_CHECKLIST.md`** – iOS deployment checklist
+- **`FishingLureApp/SUBSCRIPTION_SETUP.md`** – Subscription setup for app (RevenueCat products)
+- **`FishingLureApp/SECURITY_AUDIT_REPORT.md`** – App security audit
 
 ## 📖 Main Documentation
 

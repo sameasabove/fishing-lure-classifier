@@ -247,7 +247,7 @@ pro       - MyTackleBox Pro entitlement
 ## 📚 Helpful Documents
 
 - `REVENUECAT_REACT_NATIVE_SETUP_COMPLETE.md` - Complete RevenueCat guide
-- `SUBSCRIPTION_SETUP_FOR_APP_STORES.md` - Store product creation guide
+- `LAUNCH_CHECKLIST.md` - Full Apple App Store launch checklist (subscriptions, app info, build, submit)
 - `APP_STORE_CONNECT_API_KEY_GUIDE.md` - Apple API key guide
 - `DOCUMENTATION_INDEX.md` - All documentation reference
 
