@@ -92,11 +92,16 @@ export const getCurrentSession = async () => {
 };
 
 /**
- * Reset password
+ * Reset password - sends email; user taps link and is redirected to success page.
+ * Supabase must have this redirect URL allowed: Authentication → URL Configuration → Redirect URLs.
  */
+const PASSWORD_RESET_REDIRECT_URL = 'https://ericfernandes71.github.io/fishing-lure-classifier/password-reset-success.html';
+
 export const resetPassword = async (email) => {
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: PASSWORD_RESET_REDIRECT_URL,
+    });
     if (error) throw error;
     return { success: true };
   } catch (error) {
