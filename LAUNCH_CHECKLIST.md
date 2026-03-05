@@ -17,7 +17,7 @@
 
 1. Go to [App Store Connect](https://appstoreconnect.apple.com) → **My Apps** → **My Tackle Box** → **Features** → **In-App Purchases**.
 2. **Subscription group**
-   - [ ] Create **Subscription Group** (e.g. "My Tackle Box Subscriptions").
+   - [ ] Use your **existing** subscription group, or create one (e.g. "My Tackle Box Subscriptions"). You can add or edit subscriptions inside it.
 
 3. **Monthly subscription**
    - [ ] Add subscription → **Auto-Renewable**.
@@ -60,47 +60,47 @@
 3. **Description** (4000 chars max) – paste the block below (correct pricing: $4.99 / $39.99, 10 free scans, no lifetime):
 
    ```
-   🎣 MY TACKLE BOX - YOUR DIGITAL FISHING COMPANION
+   MY TACKLE BOX - YOUR DIGITAL FISHING COMPANION
 
    Transform your fishing experience with My Tackle Box: AI-powered lure identification, catch tracking, and tackle box management.
 
-   ✨ KEY FEATURES
+   KEY FEATURES
 
-   🤖 AI-POWERED LURE IDENTIFICATION
-   • Photo any lure for instant AI analysis
-   • Lure type, target species, techniques, best conditions
-   • Built with Canadian fishing in mind
+   AI-POWERED LURE IDENTIFICATION
+   - Photo any lure for instant AI analysis
+   - Lure type, target species, techniques, best conditions
+   - Built with Canadian fishing in mind
 
-   🎒 DIGITAL TACKLE BOX
-   • Organize lures with notes and photos
-   • Favorites, filters, cloud sync
+   DIGITAL TACKLE BOX
+   - Organize lures with notes and photos
+   - Favorites, filters, cloud sync
 
-   🐟 CATCH TRACKING
-   • Log catches with photos, species, location, conditions
-   • See which lures perform best
+   CATCH TRACKING
+   - Log catches with photos, species, location, conditions
+   - See which lures perform best
 
-   ☁️ CLOUD SYNC
-   • Data syncs across devices; secure backup
+   CLOUD SYNC
+   - Data syncs across devices; secure backup
 
-   💰 SUBSCRIPTION OPTIONS (early adoption pricing)
+   SUBSCRIPTION OPTIONS (early adoption pricing)
 
    FREE:
-   • 10 lure scans per month
-   • Basic tackle box and catch tracking
+   - 10 lure scans per month
+   - Basic tackle box and catch tracking
 
    PRO MONTHLY - $4.99/month:
-   • Unlimited lure scans
-   • Full catch tracking and tackle box features
-   • All premium features
+   - Unlimited lure scans
+   - Full catch tracking and tackle box features
+   - All premium features
 
    PRO YEARLY - $39.99/year:
-   • Save 33% vs monthly
-   • All PRO features
+   - Save 33% vs monthly
+   - All PRO features
 
-   🔒 PRIVACY & SECURITY
-   • Your data is private and secure; we don’t sell user data.
+   PRIVACY & SECURITY
+   - Your data is private and secure; we don’t sell user data.
 
-   Download My Tackle Box and take your fishing to the next level! 🎣
+   Download My Tackle Box and take your fishing to the next level.
 
    SUPPORT: mytackleboxapp@gmail.com
    Privacy: https://ericfernandes71.github.io/fishing-lure-classifier/PRIVACY_POLICY.html
@@ -118,8 +118,19 @@
 - [ ] **Build:** Leave empty for now; you’ll select the build after uploading (Phase 5).
 - [ ] **Review information:**
   - [ ] **Contact:** Your name, phone, email.
-  - [ ] **Demo account:** Create a **Sandbox** tester (Users and Access → Sandbox → Testers). Put that email + password in the version’s Review section so Apple can sign in and test subscriptions.
-  - [ ] **Notes:** e.g. "Subscriptions testable with Sandbox account. App is Canada-only for launch."
+  - [ ] **Demo account (PRO access for reviewers):** Create a test account so Apple can sign in and see all paywalled features. Use the steps below, then put that account’s **username (email)** and **password** in the App Review section.
+  - [ ] **Notes:** e.g. "Demo account has PRO access so reviewers can test all features. Subscriptions can also be tested with a Sandbox Apple ID. App is Canada-only for launch."
+
+**Demo account with PRO (for App Review):**
+1. **Create the account:** Sign up in your app (or Supabase Auth) with an email and password you’ll give to Apple (e.g. `appreview@yourdomain.com`). Note the user’s **UUID** from Supabase → Authentication → Users.
+2. **Grant PRO in Supabase** (so backend allows unlimited scans): In Supabase → SQL Editor, run (replace `USER_UUID_HERE` with the user’s UUID):
+   ```sql
+   INSERT INTO public.user_subscriptions (user_id, is_pro, subscription_type, product_identifier, will_renew)
+   VALUES ('USER_UUID_HERE', true, 'yearly', 'yearly_pro', true)
+   ON CONFLICT (user_id) DO UPDATE SET is_pro = true, subscription_type = 'yearly', product_identifier = 'yearly_pro', will_renew = true, updated_at = NOW();
+   ```
+3. **Grant PRO in RevenueCat** (so the app shows PRO in the UI): Open the app once signed in as that user (so RevenueCat has the customer). In RevenueCat → **Customers** → find that user (by App User ID = the same UUID) → **Grant promotional entitlement** "MyTackleBox Pro" (or your entitlement ID). If you don’t see the user yet, sign in on a device with that account and open the app, then refresh RevenueCat.
+4. **Give Apple:** In App Review Information, set **Username** = that email, **Password** = that password.
 - [ ] **App Privacy:** Declare data types (e.g. Photos, User Content, Identifiers, Purchases).
 - [ ] **Pricing and availability:**
   - [ ] **Price:** Free (with in-app purchases).

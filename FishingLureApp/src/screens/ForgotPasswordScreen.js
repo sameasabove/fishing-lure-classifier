@@ -5,42 +5,38 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
-  ScrollView,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAuth } from '../contexts/AuthContext';
+import { resetPassword } from '../services/supabaseService';
 
-export default function LoginScreen({ navigation }) {
+export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const { signIn } = useAuth();
+  const [message, setMessage] = useState({ type: '', text: '' }); // 'success' | 'error' | ''
 
-  const handleLogin = async () => {
-    // Clear previous error
-    setErrorMessage('');
-    
-    if (!email || !password) {
-      setErrorMessage('Please enter both email and password');
+  const handleResetPassword = async () => {
+    setMessage({ type: '', text: '' });
+    if (!email.trim()) {
+      setMessage({ type: 'error', text: 'Please enter your email address.' });
       return;
     }
 
     setIsLoading(true);
     try {
-      await signIn(email, password);
-      // Navigation will happen automatically via AuthContext
-      // Only clear fields on successful login
-      setEmail('');
-      setPassword('');
+      await resetPassword(email.trim());
+      setMessage({
+        type: 'success',
+        text: "If an account exists for that email, we've sent a password reset link. Check your inbox and spam folder.",
+      });
     } catch (error) {
-      // Keep email and password, just show error
-      setErrorMessage(error.message || 'Login failed. Please check your credentials.');
+      setMessage({
+        type: 'error',
+        text: error.message || 'Something went wrong. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -51,41 +47,55 @@ export default function LoginScreen({ navigation }) {
       colors={['#e8f5e9', '#c8e6c9', '#a5d6a7']}
       style={styles.container}
     >
-      <KeyboardAvoidingView 
-        style={styles.keyboardView} 
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-              <Image 
-                source={require('../../assets/icon.png')} 
+              <Image
+                source={require('../../assets/icon.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />
             </View>
-            <Text style={styles.title}>My Tackle Box</Text>
-            <Text style={styles.subtitle}>Sign in to access your tackle box</Text>
+            <Text style={styles.title}>Forgot password?</Text>
+            <Text style={styles.subtitle}>
+              Enter your email and we'll send you a link to reset your password.
+            </Text>
           </View>
 
           <View style={styles.form}>
-            {errorMessage ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{errorMessage}</Text>
+            {message.text ? (
+              <View
+                style={[
+                  styles.messageContainer,
+                  message.type === 'success' ? styles.messageSuccess : styles.messageError,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.messageText,
+                    message.type === 'success' ? styles.messageTextSuccess : styles.messageTextError,
+                  ]}
+                >
+                  {message.text}
+                </Text>
               </View>
             ) : null}
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
               <TextInput
-                style={[styles.input, errorMessage && styles.inputError]}
+                style={styles.input}
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
-                  setErrorMessage(''); // Clear error when user types
+                  setMessage({ type: '', text: '' });
                 }}
                 placeholder="your@email.com"
                 placeholderTextColor="#9e9e9e"
@@ -96,53 +106,28 @@ export default function LoginScreen({ navigation }) {
               />
             </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={[styles.input, errorMessage && styles.inputError]}
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  setErrorMessage(''); // Clear error when user types
-                }}
-                placeholder="Enter your password"
-                placeholderTextColor="#9e9e9e"
-                secureTextEntry
-                autoCapitalize="none"
-                editable={!isLoading}
-              />
-            </View>
-
             <TouchableOpacity
               style={[styles.button, isLoading && styles.buttonDisabled]}
-              onPress={handleLogin}
+              onPress={handleResetPassword}
               disabled={isLoading}
             >
               <LinearGradient
                 colors={isLoading ? ['#bdc3c7', '#95a5a6'] : ['#2e7d32', '#388e3c']}
                 style={styles.buttonGradient}
               >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.buttonText}>Sign In</Text>
-                )}
+                <Text style={styles.buttonText}>
+                  {isLoading ? 'Sending…' : 'Send reset link'}
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.forgotLink}
-              onPress={() => navigation.navigate('ForgotPassword')}
+              style={styles.backLink}
+              onPress={() => navigation.goBack()}
+              disabled={isLoading}
             >
-              <Text style={styles.forgotLinkText}>Forgot password?</Text>
+              <Text style={styles.backLinkText}>Back to sign in</Text>
             </TouchableOpacity>
-
-            <View style={styles.linkContainer}>
-              <Text style={styles.linkText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-                <Text style={styles.link}>Sign Up</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -167,40 +152,40 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logoContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   logo: {
-    width: 90,
-    height: 90,
-    borderRadius: 20, // Round the corners for a modern look
+    width: 56,
+    height: 56,
+    borderRadius: 12,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#1b5e20',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#4caf50',
     textAlign: 'center',
-    fontWeight: '500',
+    paddingHorizontal: 20,
   },
   form: {
     backgroundColor: '#fff',
-    padding: 30,
+    padding: 24,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -208,18 +193,29 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  errorContainer: {
-    backgroundColor: '#ffebee',
+  messageContainer: {
     padding: 12,
     borderRadius: 8,
     marginBottom: 20,
     borderLeftWidth: 4,
+  },
+  messageSuccess: {
+    backgroundColor: '#e8f5e9',
+    borderLeftColor: '#4caf50',
+  },
+  messageError: {
+    backgroundColor: '#ffebee',
     borderLeftColor: '#f44336',
   },
-  errorText: {
-    color: '#c62828',
+  messageText: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  messageTextSuccess: {
+    color: '#2e7d32',
+  },
+  messageTextError: {
+    color: '#c62828',
   },
   inputContainer: {
     marginBottom: 20,
@@ -239,10 +235,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     color: '#212121',
   },
-  inputError: {
-    borderColor: '#f44336',
-    backgroundColor: '#ffebee',
-  },
   button: {
     borderRadius: 10,
     marginTop: 10,
@@ -261,29 +253,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  forgotLink: {
-    alignSelf: 'center',
-    marginTop: 12,
+  backLink: {
+    marginTop: 20,
+    alignItems: 'center',
   },
-  forgotLinkText: {
+  backLinkText: {
     fontSize: 14,
     color: '#2e7d32',
     fontWeight: '600',
   },
-  linkContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#616161',
-  },
-  link: {
-    fontSize: 14,
-    color: '#2e7d32',
-    fontWeight: 'bold',
-  },
 });
-
