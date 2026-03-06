@@ -40,7 +40,12 @@ export default function LoginScreen({ navigation }) {
       setPassword('');
     } catch (error) {
       // Keep email and password, just show error
-      setErrorMessage(error.message || 'Login failed. Please check your credentials.');
+      const msg = error.message || '';
+      if (msg.includes('Invalid login credentials')) {
+        setErrorMessage("That's not the password we have on file. Double-check your email and password, or use Forgot password to set a new one.");
+      } else {
+        setErrorMessage(msg || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setIsLoading(false);
     }

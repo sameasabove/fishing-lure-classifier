@@ -55,6 +55,9 @@ export const PRODUCT_IDS = {
 // NOTE: Updated to match actual RevenueCat entitlement: "MyTackleBox Pro"
 const ENTITLEMENT_ID = 'MyTackleBox Pro';
 
+// Demo account for Apple review / testing — granted PRO in dev and via Supabase (no purchase needed)
+const DEMO_USER_ID = 'c0151818-4e30-4d01-8f60-94c225977b0a';
+
 // Free tier limits
 const FREE_TIER_LIMIT = 10; // scans per month
 
@@ -204,6 +207,20 @@ export const refreshCustomerInfo = async () => {
  */
 export const getSubscriptionStatus = async (forceRefresh = false) => {
   try {
+    // In dev: demo account gets PRO so you can test without purchasing (RevenueCat offerings not needed in Expo)
+    if (__DEV__) {
+      const user = await getCurrentUser();
+      if (user?.id === DEMO_USER_ID) {
+        return {
+          isPro: true,
+          productIdentifier: PRODUCT_IDS.YEARLY,
+          expirationDate: null,
+          willRenew: true,
+          periodType: 'YEAR',
+        };
+      }
+    }
+
     // TEST OVERRIDE: Force "status fail"
     if (_hasOverride('STATUS_FAIL')) {
       throw new Error('[TEST] Simulated subscription status failure.');
@@ -393,12 +410,18 @@ export const getSubscriptionPackages = async () => {
     const offerings = await Purchases.getOfferings();
     
     if (offerings.current !== null && offerings.current.availablePackages.length > 0) {
+      // Only show monthly and yearly — no lifetime
+      const allowed = [PRODUCT_IDS.MONTHLY, PRODUCT_IDS.YEARLY];
+      const packages = offerings.current.availablePackages.filter(
+        (p) => p.product?.identifier && allowed.includes(p.product.identifier)
+      );
       if (__DEV__) {
-        console.log('[Subscriptions] Loaded', offerings.current.availablePackages.length, 'packages from RevenueCat');
+        console.log('[Subscriptions] Loaded', packages.length, 'packages from RevenueCat (monthly/yearly only)');
       }
       return {
         success: true,
-        packages: offerings.current.availablePackages,
+        packages: packages.length > 0 ? packages : getFallbackPackages(),
+        isFallback: packages.length === 0,
         current: offerings.current,
       };
     } else {

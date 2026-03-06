@@ -177,6 +177,7 @@ export default function PaywallScreen({ navigation, route }) {
         {/* Subscription Packages */}
         <View style={styles.packagesContainer}>
           <Text style={styles.packagesTitle}>Choose Your Plan</Text>
+          <Text style={styles.packagesSubtitle}>Monthly or annual only — prices shown below</Text>
           
           {packages.map((pkg) => (
             <PackageCard
@@ -418,8 +419,13 @@ const styles = StyleSheet.create({
   packagesTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 4,
     color: '#333',
+  },
+  packagesSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
   },
   packageCard: {
     backgroundColor: '#F5F5F5',
