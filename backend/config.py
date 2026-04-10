@@ -32,6 +32,9 @@ RESULTS_FOLDER = os.getenv("RESULTS_FOLDER", "analysis_results")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+# JWT secret for verifying Supabase tokens server-side.
+# Found in: Supabase dashboard → Settings → API → JWT Settings → JWT Secret
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
 
 # Validate Supabase configuration on import
 if SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY:
