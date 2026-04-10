@@ -1,6 +1,5 @@
 /**
  * Subscription Service - RevenueCat Integration
- * Handles all subscription logic for the Fishing Lure App
  */
 
 import Purchases from 'react-native-purchases';
@@ -8,58 +7,30 @@ import { Platform, Linking } from 'react-native';
 import { getCurrentUser } from './supabaseService';
 import { supabase } from '../config/supabase';
 import axios from 'axios';
-import { BACKEND_URL } from './backendService'; // Use same backend URL
+import { BACKEND_URL } from './backendService';
+import { CONFIG, SUBSCRIPTION } from '../core/config';
 
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
 
-// RevenueCat API Keys
-// Get these from: https://app.revenuecat.com/ → Project Settings → API Keys
-// Test key for Expo Go (development)
-const REVENUECAT_API_KEY_TEST = 'test_dUUNiOeOwXcEMWFAsvnVGrKkMvp';
-// Production iOS key - Connected to App Store Connect (for production builds only)
-const REVENUECAT_API_KEY_IOS_PRODUCTION = 'appl_pgNgDazBFRrUubpNYcmYQqCNvPh';
-// Production Android key - Get from RevenueCat when Google Play is set up
-// TODO: Replace with your actual Android production API key from RevenueCat dashboard
-const REVENUECAT_API_KEY_ANDROID_PRODUCTION = 'REPLACE_WITH_ANDROID_PRODUCTION_KEY';
-
-// Determine which key to use based on environment
-// In Expo Go, we must use test key. In production builds, use production keys.
 const getApiKey = () => {
-  // Check if we're in Expo Go (development environment)
-  // Production keys don't work in Expo Go, so always use test key in development
   if (__DEV__) {
-    return {
-      ios: REVENUECAT_API_KEY_TEST,
-      android: REVENUECAT_API_KEY_TEST,
-    };
+    return { ios: CONFIG.revenueCat.testKey, android: CONFIG.revenueCat.testKey };
   }
-  
-  // In production builds, use production keys
   return {
-    ios: REVENUECAT_API_KEY_IOS_PRODUCTION,
-    android: REVENUECAT_API_KEY_ANDROID_PRODUCTION,
+    ios: CONFIG.revenueCat.iosProductionKey,
+    android: CONFIG.revenueCat.androidProductionKey,
   };
 };
 
-// Product IDs (must match App Store Connect / RevenueCat exactly)
-// Monthly and yearly only; no lifetime option.
 export const PRODUCT_IDS = {
-  MONTHLY: 'monthly_pro',
-  YEARLY: 'yearly_pro',
+  MONTHLY: SUBSCRIPTION.productIds.monthly,
+  YEARLY: SUBSCRIPTION.productIds.yearly,
 };
 
-// Entitlement ID (set in RevenueCat dashboard) - Must match RevenueCat identifier exactly!
-// See REVENUECAT_REACT_NATIVE_SETUP_COMPLETE.md - use 'pro' as created in dashboard
-// NOTE: Updated to match actual RevenueCat entitlement: "MyTackleBox Pro"
-const ENTITLEMENT_ID = 'MyTackleBox Pro';
-
-// Demo account for Apple review / testing — granted PRO in dev and via Supabase (no purchase needed)
-const DEMO_USER_ID = 'c0151818-4e30-4d01-8f60-94c225977b0a';
-
-// Free tier limits
-const FREE_TIER_LIMIT = 10; // scans per month
+const ENTITLEMENT_ID = SUBSCRIPTION.entitlementId;
+const FREE_TIER_LIMIT = SUBSCRIPTION.freeTierLimit;
 
 // ============================================================================
 // TEST OVERRIDES (Dev only – use Subscription Test screen to set)
@@ -207,18 +178,8 @@ export const refreshCustomerInfo = async () => {
  */
 export const getSubscriptionStatus = async (forceRefresh = false) => {
   try {
-    // In dev: demo account gets PRO so you can test without purchasing (RevenueCat offerings not needed in Expo)
     if (__DEV__) {
-      const user = await getCurrentUser();
-      if (user?.id === DEMO_USER_ID) {
-        return {
-          isPro: true,
-          productIdentifier: PRODUCT_IDS.YEARLY,
-          expirationDate: null,
-          willRenew: true,
-          periodType: 'YEAR',
-        };
-      }
+      // Demo PRO override removed — use RevenueCat test sandbox or Supabase flag instead.
     }
 
     // TEST OVERRIDE: Force "status fail"

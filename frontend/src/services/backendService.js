@@ -1,22 +1,9 @@
 import axios from 'axios';
 import { supabase } from '../config/supabase';
 import { Platform } from 'react-native';
+import { CONFIG } from '../core/config';
 
-// Configuration - Use environment variables for security
-// For development: use local Flask server
-// For production: use Render backend
-// NOTE: For phone testing, ensure your computer's firewall allows port 5000
-// and that phone and computer are on the same Wi-Fi network
-// Update the local IP address below to match your computer's IP on your local network
-// For remote testing with friends, temporarily switch to production backend
-// NOTE: Using production backend for now since local server may have network/firewall issues
-export const BACKEND_URL = __DEV__ 
-  ? 'https://fishing-lure-backend.onrender.com'  // Production backend (use for testing when local server unreachable)
-  : 'https://fishing-lure-backend.onrender.com';  // Production Render backend
-
-if (__DEV__) {
-console.log('[BackendService] Using backend URL:', BACKEND_URL);
-}
+export const BACKEND_URL = CONFIG.backend.url;
 
 // Helper to get current user ID
 const getCurrentUserId = async () => {
