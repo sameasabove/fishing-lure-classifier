@@ -34,6 +34,13 @@ export const CONFIG = {
 // App constants (not secrets — safe to keep here)
 // ---------------------------------------------------------------------------
 
+export const AUTH = {
+  // Password reset redirects here after the user clicks the email link.
+  // Must also be allowlisted in Supabase: Authentication → URL Configuration → Redirect URLs.
+  // Update this to your own GitHub Pages URL (or a custom domain) before shipping.
+  passwordResetRedirectUrl: process.env.EXPO_PUBLIC_PASSWORD_RESET_URL ?? '',
+};
+
 export const SUBSCRIPTION = {
   entitlementId: 'MyTackleBox Pro',
   freeTierLimit: 10,

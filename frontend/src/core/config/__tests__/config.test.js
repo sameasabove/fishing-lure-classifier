@@ -161,6 +161,29 @@ describe('reads from environment variables', () => {
 });
 
 // ---------------------------------------------------------------------------
+// AUTH constants
+// ---------------------------------------------------------------------------
+
+describe('AUTH constants', () => {
+  it('exports AUTH with passwordResetRedirectUrl', () => {
+    const { AUTH } = require('../index');
+    expect(AUTH).toHaveProperty('passwordResetRedirectUrl');
+  });
+
+  it('passwordResetRedirectUrl defaults to empty string when env var missing', () => {
+    delete process.env.EXPO_PUBLIC_PASSWORD_RESET_URL;
+    const { AUTH } = require('../index');
+    expect(AUTH.passwordResetRedirectUrl).toBe('');
+  });
+
+  it('reads EXPO_PUBLIC_PASSWORD_RESET_URL', () => {
+    process.env.EXPO_PUBLIC_PASSWORD_RESET_URL = 'https://offcitydev.github.io/my-tackle-box/password-reset-success.html';
+    const { AUTH } = require('../index');
+    expect(AUTH.passwordResetRedirectUrl).toBe('https://offcitydev.github.io/my-tackle-box/password-reset-success.html');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // SUBSCRIPTION constants — must match RevenueCat dashboard + backend exactly
 // ---------------------------------------------------------------------------
 

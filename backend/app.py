@@ -218,8 +218,7 @@ def upload_file():
                     except Exception as e2:
                         print(f"[ERROR] Could not record scan for quota: {e2}")
             
-            print(f"[OK] Analysis completed successfully")
-            print(f"[INFO] Results: {results}")
+            print(f"[OK] Analysis completed successfully for user {user_id}")
             
             return jsonify(results)
             
