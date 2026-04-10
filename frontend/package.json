@@ -7,11 +7,22 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "setup": "node scripts/quick-start.js",
     "build:ios": "eas build --platform ios --profile production-ios",
     "build:android": "eas build --platform android --profile production",
     "submit:ios": "eas submit --platform ios",
     "submit:android": "eas submit --platform android"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ],
+    "globals": {
+      "__DEV__": true
+    }
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -44,7 +55,9 @@
     "react-native-view-shot": "^4.0.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "babel-preset-expo": "^55.0.16",
+    "jest-expo": "^55.0.15"
   },
   "private": true
 }
