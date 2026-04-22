@@ -1,0 +1,3 @@
+setup:
+  project: my-tackle-box
+  config: dev_my-tackle-box
