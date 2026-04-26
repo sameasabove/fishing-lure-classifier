@@ -38,7 +38,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.fishinglure.analyzer",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
