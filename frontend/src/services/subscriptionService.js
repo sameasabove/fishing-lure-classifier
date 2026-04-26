@@ -675,6 +675,7 @@ export const getMonthlyQuota = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/check-scan-quota`, {
         params: { user_id: user.id },
+        headers: { 'X-User-ID': user.id },
         timeout: 5000,
       });
       
