@@ -100,6 +100,17 @@ export const initializeSubscriptions = async (userId) => {
       if (__DEV__) {
         console.log('[Subscriptions] Already configured, customer ID:', customerInfo.originalAppUserId);
       }
+      // Supabase user must match RevenueCat app user ID or offerings/purchases can be wrong
+      if (userId && customerInfo.originalAppUserId !== userId) {
+        try {
+          await Purchases.logIn(userId);
+          if (__DEV__) {
+            console.log('[Subscriptions] logIn applied for user:', userId);
+          }
+        } catch (logInErr) {
+          console.warn('[Subscriptions] Purchases.logIn failed:', logInErr?.message || logInErr);
+        }
+      }
       return { success: true, alreadyConfigured: true };
     } catch (e) {
       // Only treat "not configured" as non-fatal; rethrow real errors (network, etc.)
@@ -376,6 +387,17 @@ export const getSubscriptionPackages = async () => {
       const packages = offerings.current.availablePackages.filter(
         (p) => p.product?.identifier && allowed.includes(p.product.identifier)
       );
+      if (packages.length === 0) {
+        const found = offerings.current.availablePackages
+          .map((p) => p.product?.identifier)
+          .filter(Boolean);
+        console.warn(
+          '[Subscriptions] Offering packages must use store product IDs',
+          allowed.join(', '),
+          '— RevenueCat returned:',
+          found.length ? found.join(', ') : '(none)'
+        );
+      }
       if (__DEV__) {
         console.log('[Subscriptions] Loaded', packages.length, 'packages from RevenueCat (monthly/yearly only)');
       }
@@ -417,8 +439,8 @@ export const getSubscriptionPackages = async () => {
  * These are mock packages for testing/development
  */
 const getFallbackPackages = () => {
-  // Create mock package objects that match RevenueCat package structure
-  const createMockPackage = (identifier, title, description, priceString, packageType) => {
+  // Align with primary App Store storefront (Canada): keep numeric price + currency so UI matches StoreKit.
+  const createMockPackage = (identifier, title, description, packageType, price, currencyCode) => {
     return {
       identifier,
       packageType,
@@ -427,27 +449,29 @@ const getFallbackPackages = () => {
         identifier: identifier,
         description: description,
         title: title,
-        price: 0, // Will be set by store
-        priceString: priceString,
-        currencyCode: 'USD',
+        price,
+        currencyCode,
+        priceString: '',
       },
     };
   };
-  
+
   return [
     createMockPackage(
       PRODUCT_IDS.MONTHLY,
       'Monthly PRO',
       'Unlimited scans, billed monthly',
-      '$4.99/month',
-      'MONTHLY'
+      'MONTHLY',
+      6.99,
+      'CAD'
     ),
     createMockPackage(
       PRODUCT_IDS.YEARLY,
       'Annual PRO',
       'Unlimited scans, billed annually',
-      '$39.99/year',
-      'ANNUAL'
+      'ANNUAL',
+      49.99,
+      'CAD'
     ),
   ];
 };

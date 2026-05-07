@@ -62,7 +62,7 @@ Our App offers a free tier with limited features:
 We offer monthly and yearly PRO subscriptions. **Current prices are early adoption pricing** and will remain in place for our first wave of users; we may change pricing later with notice.
 
 #### PRO Monthly Subscription
-- **Price:** $4.99 USD per month
+- **Price:** CA$6.99 per month (Canada App Store; other regions may differ)
 - **Features:**
   - Unlimited lure analyses
   - Full catch tracking
@@ -72,7 +72,7 @@ We offer monthly and yearly PRO subscriptions. **Current prices are early adopti
 - **Auto-Renewal:** Automatically renews each month unless cancelled
 
 #### PRO Yearly Subscription
-- **Price:** $39.99 USD per year (save 33% vs. monthly)
+- **Price:** CA$49.99 per year (Canada App Store; save about 40% vs. paying monthly — other regions may differ)
 - **Features:** Same as PRO Monthly
 - **Billing:** Charged annually on your subscription anniversary date
 - **Auto-Renewal:** Automatically renews each year unless cancelled
@@ -82,7 +82,7 @@ We offer monthly and yearly PRO subscriptions. **Current prices are early adopti
 #### Payment Processing
 - Subscriptions are processed through Apple App Store or Google Play Store
 - Payment methods are managed by the respective app store
-- Prices are displayed in USD but may be converted to your local currency
+- In Canada, subscription prices are shown in CAD on the App Store; other regions use the app store’s local currency and display rules
 
 #### Auto-Renewal
 - Subscriptions automatically renew at the end of each billing period
@@ -92,12 +92,12 @@ We offer monthly and yearly PRO subscriptions. **Current prices are early adopti
 #### Cancellation
 **iOS Users:**
 - Cancel through your Apple ID account settings
-- Go to Settings → [Your Name] → Subscriptions → Fishing Lure Analyzer → Cancel Subscription
+- Go to Settings → [Your Name] → Subscriptions → My Tackle Box → Cancel Subscription
 - Cancellation takes effect at the end of the current billing period
 
 **Android Users:**
 - Cancel through Google Play Store
-- Go to Play Store → Subscriptions → Fishing Lure Analyzer → Cancel Subscription
+- Go to Play Store → Subscriptions → My Tackle Box → Cancel Subscription
 - Cancellation takes effect at the end of the current billing period
 
 **Important:** Cancellation must be done through the app store, not through our App.
@@ -277,7 +277,7 @@ For questions about these Terms, please contact us at:
 **Key Points:**
 - You must be 13+ to use the App
 - Free tier: 10 scans/month
-- Premium: $4.99/month or $39.99/year (early adoption pricing)
+- Premium: CA$6.99/month or CA$49.99/year in Canada (early adoption pricing; see App Store for your region)
 - Cancel subscriptions through app store
 - AI analysis is for informational purposes only
 - We're not liable for fishing-related incidents

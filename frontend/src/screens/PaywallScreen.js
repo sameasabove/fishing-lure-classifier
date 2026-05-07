@@ -3,7 +3,7 @@
  * Beautiful upgrade screen for PRO subscription
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -20,12 +20,15 @@ import {
   getSubscriptionPackages,
   purchaseSubscription,
   restorePurchases,
+  initializeSubscriptions,
 } from '../services/subscriptionService';
 import { LEGAL } from '../core/config';
+import { useAuth } from '../contexts/AuthContext';
 
 const { width } = Dimensions.get('window');
 
 export default function PaywallScreen({ navigation, route }) {
+  const { user } = useAuth();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
@@ -35,8 +38,21 @@ export default function PaywallScreen({ navigation, route }) {
   const customMessage = route?.params?.message;
   
   useEffect(() => {
-    loadPackages();
-  }, []);
+    let cancelled = false;
+
+    const run = async () => {
+      if (user?.id) {
+        await initializeSubscriptions(user.id);
+      }
+      if (cancelled) return;
+      await loadPackages();
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
   
   const loadPackages = async () => {
     setLoading(true);
@@ -113,6 +129,28 @@ export default function PaywallScreen({ navigation, route }) {
       Alert.alert('Restore Failed', result.error || 'Could not restore purchases.');
     }
   };
+
+  const annualSavingsPercent = useMemo(() => {
+    const monthly = packages.find(
+      (p) =>
+        p.packageType === 'MONTHLY' ||
+        /\bmonth\b/i.test(p.identifier) ||
+        p.product?.identifier === 'monthly_pro'
+    );
+    const annual = packages.find(
+      (p) =>
+        p.packageType === 'ANNUAL' ||
+        /annual|yearly/i.test(p.identifier) ||
+        p.product?.identifier === 'yearly_pro'
+    );
+    const mp = monthly?.product?.price;
+    const ap = annual?.product?.price;
+    if (typeof mp !== 'number' || typeof ap !== 'number' || mp <= 0) return null;
+    const yearlyIfMonthly = mp * 12;
+    if (yearlyIfMonthly <= 0) return null;
+    const pct = Math.round((1 - ap / yearlyIfMonthly) * 100);
+    return pct > 0 ? pct : null;
+  }, [packages]);
   
   if (loading) {
     return (
@@ -187,6 +225,7 @@ export default function PaywallScreen({ navigation, route }) {
               package={pkg}
               isSelected={selectedPackage?.identifier === pkg.identifier}
               onPress={() => setSelectedPackage(pkg)}
+              annualSavingsPercent={annualSavingsPercent}
             />
           ))}
         </View>
@@ -197,7 +236,8 @@ export default function PaywallScreen({ navigation, route }) {
             <Text style={styles.subscriptionLegalTitle}>Selected subscription</Text>
             <Text style={styles.subscriptionLegalLine}>
               {selectedPackage.product?.title || 'PRO'} — {getPackageTitle(selectedPackage)} —{' '}
-              {getPackageDescription(selectedPackage)} — {selectedPackage.product?.priceString ?? ''}
+              {getPackageDescription(selectedPackage)} —{' '}
+              {formatProductPrice(selectedPackage.product, pricePeriodForPackage(selectedPackage))}
             </Text>
             <View style={styles.legalLinksRow}>
               <Text
@@ -277,7 +317,7 @@ const Feature = ({ icon, text, highlight }) => (
   </View>
 );
 
-const PackageCard = ({ package: pkg, isSelected, onPress }) => {
+const PackageCard = ({ package: pkg, isSelected, onPress, annualSavingsPercent }) => {
   // Determine if this is the best value
   const isBestValue = pkg.packageType === 'ANNUAL' || 
                       pkg.identifier.includes('annual') ||
@@ -286,7 +326,8 @@ const PackageCard = ({ package: pkg, isSelected, onPress }) => {
   // Get package details
   const product = pkg.product;
   const title = getPackageTitle(pkg);
-  const savings = getPackageSavings(pkg);
+  const savings =
+    isBestValue && annualSavingsPercent != null ? `Save ${annualSavingsPercent}%` : null;
   
   return (
     <TouchableOpacity
@@ -320,7 +361,7 @@ const PackageCard = ({ package: pkg, isSelected, onPress }) => {
           styles.packagePrice,
           isSelected && styles.packagePriceSelected
         ]}>
-          {product.priceString}
+          {formatProductPrice(product, pricePeriodForPackage(pkg))}
         </Text>
       </View>
       
@@ -359,9 +400,36 @@ const getPackageDescription = (pkg) => {
   return pkg.product.description;
 };
 
-const getPackageSavings = (pkg) => {
-  const id = pkg.identifier.toLowerCase();
-  if (id.includes('annual') || id.includes('yearly')) return 'Save 33%';
+/** Match App Store sheet: use StoreKit/RevenueCat numeric price + ISO currency when available. */
+const formatProductPrice = (product, period) => {
+  if (!product) return '';
+  const raw = product.price;
+  const price = typeof raw === 'number' ? raw : typeof raw === 'string' ? parseFloat(raw) : NaN;
+  const code = product.currencyCode;
+  if (!Number.isNaN(price) && code) {
+    try {
+      const locale = code === 'CAD' ? 'en-CA' : undefined;
+      const formatted = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: code,
+      }).format(price);
+      if (period === 'month') return `${formatted}/month`;
+      if (period === 'year') return `${formatted}/year`;
+      return formatted;
+    } catch (_) {
+      /* use priceString */
+    }
+  }
+  return product.priceString || '';
+};
+
+const pricePeriodForPackage = (pkg) => {
+  if (!pkg) return null;
+  const id = pkg.identifier?.toLowerCase() ?? '';
+  if (id.includes('annual') || id.includes('yearly')) return 'year';
+  if (id.includes('month')) return 'month';
+  if (pkg.packageType === 'ANNUAL') return 'year';
+  if (pkg.packageType === 'MONTHLY') return 'month';
   return null;
 };
 
