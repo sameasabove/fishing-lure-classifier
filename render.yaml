@@ -3,7 +3,7 @@
 services:
   - type: web
     name: fishing-lure-backend
-    env: python
+    runtime: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
