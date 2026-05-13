@@ -224,6 +224,36 @@ export const deleteLureFromBackend = async (lureId) => {
   }
 };
 
+/**
+ * Permanently delete the signed-in user's account (backend + Supabase auth cascade).
+ * Caller should clear local storage, RevenueCat, and sign out after success.
+ */
+export const deleteAccountOnBackend = async () => {
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session?.access_token) {
+    throw new Error('Not signed in.');
+  }
+
+  try {
+    const response = await axios.delete(`${BACKEND_URL}/api/account`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+      timeout: 120000,
+    });
+    return response.data;
+  } catch (error) {
+    if (__DEV__) {
+      console.error('[BackendService] delete account error:', error?.response?.data || error?.message);
+    }
+    const status = error.response?.status;
+    const data = error.response?.data;
+    const message = data?.message || data?.error || error.message || 'Failed to delete account.';
+    const err = new Error(message);
+    err.code = data?.error;
+    err.status = status;
+    throw err;
+  }
+};
+
 // Helper function to test backend connection
 export const testBackendConnection = async () => {
   try {

@@ -14,6 +14,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import TackleBoxScreen from './src/screens/TackleBoxScreen';
 import MapScreen from './src/screens/MapScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import AccountScreen from './src/screens/AccountScreen';
 import LureDetailScreen from './src/screens/LureDetailScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
@@ -80,6 +81,11 @@ function SettingsStack() {
         options={{ title: 'Settings' }}
       />
       <Stack.Screen 
+        name="Account" 
+        component={AccountScreen} 
+        options={{ title: 'Account' }}
+      />
+      <Stack.Screen 
         name="Paywall" 
         component={PaywallScreen} 
         options={{ 
@@ -124,7 +130,7 @@ function MainTabNavigator() {
           } else if (route.name === 'Map') {
             iconName = focused ? 'map' : 'map-outline';
           } else if (route.name === 'Settings') {
-            iconName = focused ? 'settings' : 'settings-outline';
+            iconName = focused ? 'person' : 'person-outline';
           }
 
           return <Ionicons name={iconName} size={28} color={color} />;
@@ -195,8 +201,8 @@ function MainTabNavigator() {
         name="Settings" 
         component={SettingsStack} 
         options={{ 
-          title: 'Settings',
-          tabBarLabel: 'Settings',
+          title: 'Profile',
+          tabBarLabel: 'Profile',
           headerShown: false,
         }}
       />

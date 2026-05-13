@@ -19,12 +19,15 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fishinglure.analyzer",
-      "buildNumber": "9",
+      "buildNumber": "10",
       "deploymentTarget": "13.0",
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs access to camera to take photos of fishing lures for analysis.",
         "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select fishing lure images for analysis.",
         "NSMicrophoneUsageDescription": "Camera access may require microphone permission on some devices.",
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show fishing spots, nearby lakes, local weather conditions, and region-specific fishing information. For example, when you're near Lake Simcoe, the app can recommend species, lures, and conditions relevant to that area.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses your location to show fishing spots, nearby lakes, local weather conditions, and region-specific fishing information. For example, when you're near Lake Simcoe, the app can recommend species, lures, and conditions relevant to that area.",
+        "NSLocationAlwaysUsageDescription": "This app uses your location to show fishing spots, nearby lakes, local weather conditions, and region-specific fishing information. For example, when you're near Lake Simcoe, the app can recommend species, lures, and conditions relevant to that area.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "config": {

@@ -239,6 +239,36 @@ def verify_subscription():
     return jsonify({'is_pro': False, 'subscription_type': 'free'})
 
 
+@app.route('/api/account', methods=['DELETE'])
+@limiter.limit('10 per hour')
+@require_auth
+def delete_account():
+    """
+    Full account deletion: Supabase storage, then auth user (DB cascades).
+    Client must clear local data and sign out after success.
+    """
+    user_id = g.user_id
+
+    if not supabase_service.is_enabled():
+        return jsonify({
+            'error': 'service_unavailable',
+            'message': 'Account deletion is temporarily unavailable. Please try again later.',
+        }), 503
+
+    result = supabase_service.delete_user_account(user_id)
+    if not result.get('success'):
+        return jsonify({
+            'error': 'account_deletion_failed',
+            'message': result.get('error') or 'Could not delete account. Please try again or contact support.',
+        }), 500
+
+    return jsonify({
+        'success': True,
+        'message': 'Account deleted.',
+        'storage_removed': result.get('storage_removed', 0),
+    })
+
+
 @app.route('/api/check-scan-quota')
 @require_auth
 def check_scan_quota():

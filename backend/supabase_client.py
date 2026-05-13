@@ -5,8 +5,9 @@ Handles database and storage operations
 
 from supabase import create_client, Client
 import config
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import datetime
+from collections import deque
 
 class SupabaseService:
     def __init__(self):
@@ -297,7 +298,77 @@ class SupabaseService:
         except Exception as e:
             print(f"[ERROR] Failed to delete from Supabase Storage: {str(e)}")
             return False
-    
+
+    def delete_all_user_storage_files(self, user_id: str) -> int:
+        """
+        Remove all objects under lure-images/{user_id}/ (recursive).
+        Uses service role; does not rely on RLS.
+        """
+        if not self.is_enabled():
+            return 0
+
+        bucket = 'lure-images'
+        root_prefix = user_id.strip()
+        if not root_prefix:
+            return 0
+
+        removed = 0
+        queue = deque([root_prefix])
+
+        while queue:
+            prefix = queue.popleft()
+            try:
+                items: List[Dict[str, Any]] = self.client.storage.from_(bucket).list(prefix) or []
+            except Exception as e:
+                print(f"[WARNING] Storage list failed for prefix {prefix!r}: {e}")
+                continue
+
+            batch_paths: List[str] = []
+            for item in items:
+                name = item.get('name')
+                if not name:
+                    continue
+                child = f"{prefix}/{name}"
+                meta = item.get('metadata') or {}
+                if isinstance(meta, dict) and meta.get('size') is not None:
+                    batch_paths.append(child)
+                else:
+                    queue.append(child)
+
+            if batch_paths:
+                try:
+                    self.client.storage.from_(bucket).remove(batch_paths)
+                    removed += len(batch_paths)
+                except Exception as e:
+                    print(f"[WARNING] Storage remove failed for {len(batch_paths)} objects: {e}")
+
+        print(f"[OK] Removed {removed} file(s) from {bucket}/{root_prefix}/")
+        return removed
+
+    def delete_user_account(self, user_id: str) -> Dict[str, Any]:
+        """
+        Permanently delete the auth user and all DB rows that reference auth.users
+        (profiles, lure_analyses, catches, user_subscriptions cascade in schema).
+        Storage objects under lure-images/{user_id}/ are removed first.
+        """
+        if not self.is_enabled():
+            return {'success': False, 'error': 'Supabase not configured'}
+
+        storage_removed = 0
+        try:
+            storage_removed = self.delete_all_user_storage_files(user_id)
+        except Exception as e:
+            print(f"[WARNING] Storage cleanup error (continuing with auth delete): {e}")
+
+        try:
+            self.client.auth.admin.delete_user(user_id)
+            print(f"[OK] Auth user deleted: {user_id}")
+            return {'success': True, 'storage_removed': storage_removed}
+        except Exception as e:
+            msg = str(e)
+            print(f"[ERROR] delete_user_account failed at auth.admin.delete_user: {msg}")
+            return {'success': False, 'error': msg, 'storage_removed': storage_removed}
+
     # ========================================================================
     # USER PROFILE
     # ========================================================================

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { testBackendConnection } from '../services/backendService';
 import { useAuth } from '../contexts/AuthContext';
 import { getSubscriptionInfo, syncSubscription, openSubscriptionManagement } from '../services/subscriptionService';
@@ -166,6 +167,19 @@ export default function SettingsScreen() {
           <View style={styles.userDetails}>
             <Text style={styles.userName}>{user?.user_metadata?.full_name || 'User'}</Text>
             <Text style={styles.userEmail}>{user?.email}</Text>
+
+            <TouchableOpacity
+              style={styles.accountNavRow}
+              onPress={() => navigation.navigate('Account')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.accountNavLeft}>
+                <Text style={styles.accountNavTitle}>Account & data</Text>
+                <Text style={styles.accountNavSubtitle}>Permanently delete your account and cloud data</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={22} color="#95A5A6" />
+            </TouchableOpacity>
+
             {subscriptionInfo && (
               <>
                 <TouchableOpacity 
@@ -488,6 +502,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#E65100',
     fontWeight: '600',
+  },
+  accountNavRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    borderTopWidth: 1,
+    borderTopColor: '#e8e8e8',
+  },
+  accountNavLeft: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  accountNavTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2c3e50',
+  },
+  accountNavSubtitle: {
+    fontSize: 12,
+    color: '#7f8c8d',
+    marginTop: 2,
   },
   logoutButton: {
     backgroundColor: '#e74c3c',
