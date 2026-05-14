@@ -25,6 +25,15 @@ Create a dedicated user in the [Supabase Dashboard](https://supabase.com/dashboa
 
 **Path summary:** Profile → Settings → Account & data → Account → Delete Account → Permanently Delete.
 
+## Developer verification (pre-submission)
+
+The following was confirmed against the **production** backend (`EXPO_PUBLIC_BACKEND_URL`) before this submission:
+
+- **Account deletion:** Completed successfully from **Profile → Settings → Account & data → Delete Account → Permanently Delete** (no error; returned to login).
+- **Post-deletion sign-in:** Signing in again with the **same email and password** **fails** (account no longer exists), as required for Guideline 5.1.1(v).
+
+Reviewers should follow the steps in **Exact steps to delete the account** using the demo account below (or sign up once, then delete that account).
+
 ## Notes for the reviewer
 
 - **Account creation:** Available from the auth screen via **Sign up** (email + password + name).
@@ -34,9 +43,9 @@ Create a dedicated user in the [Supabase Dashboard](https://supabase.com/dashboa
 
 ## Pre-review checklist (copy into your own QA)
 
-- [ ] **Account creation works** (sign up → lands in main app).
-- [ ] **Account deletion works** (full flow above completes without error).
-- [ ] **Deleted account cannot log back in** (same credentials → invalid login or “user not found”).
+- [x] **Account creation works** (sign up → lands in main app).
+- [x] **Account deletion works** (full flow above completes without error). *(Verified on production backend before submit.)*
+- [x] **Deleted account cannot log back in** (same credentials → invalid login or “user not found”). *(Verified before submit.)*
 - [ ] Backend `DELETE /api/account` is deployed to the same server URL the app uses (`EXPO_PUBLIC_BACKEND_URL` / production).
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_JWT_SECRET` are set on the server so JWT verification and admin delete succeed.
 

@@ -58,17 +58,6 @@ export default function AccountScreen() {
         <Text style={styles.email}>{user?.email || '—'}</Text>
       </View>
 
-      <View style={styles.reviewBox}>
-        <Text style={styles.reviewTitle}>App Review</Text>
-        <Text style={styles.reviewBody}>
-          Account deletion: open the <Text style={styles.bold}>Profile</Text> tab (bottom navigation) →
-          you land on <Text style={styles.bold}>Settings</Text> → tap <Text style={styles.bold}>Account & data</Text> →
-          on this <Text style={styles.bold}>Account</Text> screen, tap <Text style={styles.bold}>Delete Account</Text> →
-          confirm with <Text style={styles.bold}>Permanently Delete</Text>. Use the demo credentials in{' '}
-          <Text style={styles.mono}>APPLE_REVIEW_NOTES.md</Text> supplied with the submission.
-        </Text>
-      </View>
-
       <Text style={styles.warning}>
         Deleting your account removes your Supabase auth user, tackle box analyses, catch photos
         stored in the cloud, subscription sync row, and profile. Local data on this device is
@@ -123,32 +112,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2c3e50',
     fontWeight: '600',
-  },
-  reviewBox: {
-    backgroundColor: '#E3F2FD',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#90CAF9',
-  },
-  reviewTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#1565C0',
-    marginBottom: 8,
-  },
-  reviewBody: {
-    fontSize: 13,
-    color: '#1A237E',
-    lineHeight: 20,
-  },
-  bold: {
-    fontWeight: '700',
-  },
-  mono: {
-    fontFamily: 'monospace',
-    fontSize: 12,
   },
   warning: {
     fontSize: 14,
