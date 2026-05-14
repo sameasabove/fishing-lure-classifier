@@ -121,6 +121,12 @@ class TestRequireAuth:
         res = client.get('/protected', headers={'Authorization': token})
         assert res.status_code == 401
 
+    def test_lowercase_bearer_scheme_accepted(self, client):
+        token = make_token()
+        res = client.get('/protected', headers={'Authorization': f'bearer {token}'})
+        assert res.status_code == 200
+        assert res.get_json()['user_id'] == TEST_USER_ID
+
 
 class TestDevFallback:
     """Dev fallback: X-User-ID header accepted when JWT secret is absent."""

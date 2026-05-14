@@ -25,6 +25,25 @@ FLASK_ENV = os.getenv('FLASK_ENV', 'development')
 IS_PRODUCTION = FLASK_ENV == 'production'
 
 
+def _get_bearer_token():
+    """
+    Extract JWT from Authorization header.
+    Case-insensitive scheme (some clients send 'bearer' vs 'Bearer').
+    """
+    auth = (
+        request.headers.get('Authorization')
+        or request.headers.get('authorization')
+        or ''
+    ).strip()
+    if not auth:
+        return None
+    parts = auth.split(None, 1)
+    if len(parts) != 2 or parts[0].lower() != 'bearer':
+        return None
+    token = parts[1].strip()
+    return token or None
+
+
 def _verify_token(token):
     """
     Decode and verify a Supabase JWT. Returns the payload on success.
@@ -59,11 +78,9 @@ def require_auth(f):
                 'message': 'Authentication unavailable. Contact support.',
             }), 503
 
-        auth_header = request.headers.get('Authorization', '')
+        token = _get_bearer_token()
 
-        if auth_header.startswith('Bearer '):
-            token = auth_header[7:]
-
+        if token:
             if not SUPABASE_JWT_SECRET:
                 # Dev only — secret absent, fall through to header fallback below
                 pass

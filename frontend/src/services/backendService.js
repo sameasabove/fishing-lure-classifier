@@ -225,33 +225,63 @@ export const deleteLureFromBackend = async (lureId) => {
 };
 
 /**
- * Permanently delete the signed-in user's account (backend + Supabase auth cascade).
- * Caller should clear local storage, RevenueCat, and sign out after success.
+ * Fresh access token for backend calls (refresh if session is stale).
  */
-export const deleteAccountOnBackend = async () => {
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session?.access_token) {
+async function getAccessTokenForBackend() {
+  let {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+  if (error && __DEV__) {
+    console.warn('[BackendService] getSession:', error.message);
+  }
+  if (!session?.access_token) {
+    const { data, error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError) {
+      throw new Error('Not signed in.');
+    }
+    session = data?.session;
+  }
+  if (!session?.access_token) {
     throw new Error('Not signed in.');
   }
+  return session.access_token;
+}
 
+/**
+ * Permanently delete the signed-in user's account (backend + Supabase auth cascade).
+ * Caller should clear local storage, RevenueCat, and sign out after success.
+ *
+ * Uses fetch (not axios) for DELETE so Authorization is reliably sent on React Native.
+ */
+export const deleteAccountOnBackend = async () => {
+  const accessToken = await getAccessTokenForBackend();
+
+  const res = await fetch(`${BACKEND_URL}/api/account`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/json',
+    },
+  });
+
+  let data = {};
   try {
-    const response = await axios.delete(`${BACKEND_URL}/api/account`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-      timeout: 120000,
-    });
-    return response.data;
-  } catch (error) {
-    if (__DEV__) {
-      console.error('[BackendService] delete account error:', error?.response?.data || error?.message);
-    }
-    const status = error.response?.status;
-    const data = error.response?.data;
-    const message = data?.message || data?.error || error.message || 'Failed to delete account.';
+    data = await res.json();
+  } catch (_) {
+    /* non-JSON body */
+  }
+
+  if (!res.ok) {
+    const message =
+      data?.message || data?.error || `Request failed (${res.status})`;
     const err = new Error(message);
     err.code = data?.error;
-    err.status = status;
+    err.status = res.status;
     throw err;
   }
+
+  return data;
 };
 
 // Helper function to test backend connection
