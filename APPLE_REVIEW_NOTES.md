@@ -1,6 +1,44 @@
 # Apple App Review — MyTackleBox (My Tackle Box)
 
-Use this note in **App Store Connect → App Review Information → Notes**. Replace placeholder credentials with the real demo account you create before submission.
+## App Store Connect → App Review Information → Notes (paste this)
+
+**Character limit:** 4000. The block below is ~1,200 characters before you add your link and credentials.
+
+1. Replace `PASTE_LINK_HERE` with your **screen recording** (Apple requested a physical-device recording). Use a **private/unlisted** link (e.g. iCloud, Dropbox, YouTube unlisted) if Notes does not accept a file upload.
+2. Replace the demo **email** and **password** with the real review-only account.
+3. Paste the whole block into **App Store Connect → your app version → App Review Information → Notes**.
+
+```
+APP REVIEW — Guidelines 5.1.1(ii) & 5.1.1(v)
+
+5.1.1(ii) LOCATION: Updated iOS purpose strings (When In Use, Always When In Use, Always) to clearly describe use of location for fishing spots, nearby lakes, weather, and region-specific fishing information, including the Lake Simcoe example.
+
+5.1.1(v) ACCOUNT DELETION: In-app permanent deletion (no website required). Removes Supabase auth user, user storage folder, and local session.
+
+SCREEN RECORDING (physical device — iPhone or iPad):
+PASTE_LINK_HERE
+Shows: sign in or sign up → Profile tab → Account & data → Delete Account → Permanently Delete → login screen; same credentials no longer work.
+
+DEMO ACCOUNT (replace with yours before submit):
+Email: YOUR_REVIEW_EMAIL@example.com
+Password: YOUR_REVIEW_PASSWORD
+
+DELETE ACCOUNT — STEPS:
+1) Sign in with demo OR Sign up with a disposable email.
+2) Tap Profile (bottom) → under Account tap Account & data.
+3) Tap Delete Account → Permanently Delete in the confirmation alert.
+4) App returns to login; same email/password cannot sign in again.
+
+Sign-up: first screen → Sign up (email, password, name).
+
+We verified delete + failed re-login on production before this submission.
+
+Thank you.
+```
+
+---
+
+Use the note in **App Store Connect → App Review Information → Notes**. Replace placeholder credentials with the real demo account you create before submission.
 
 ## Demo account (create before review)
 
