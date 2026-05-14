@@ -119,6 +119,12 @@ def require_auth(f):
         return jsonify({
             'error': 'authentication_required',
             'message': 'Please sign in to use this feature.',
+            'hint': (
+                'Send Authorization: Bearer <Supabase access_token>. '
+                'On the server, set SUPABASE_JWT_SECRET to your project JWT secret '
+                '(Supabase → Project Settings → API → JWT Settings). '
+                'For local Flask without a JWT secret, also send X-User-ID with your user UUID.'
+            ),
         }), 401
 
     return decorated

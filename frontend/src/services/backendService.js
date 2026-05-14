@@ -252,36 +252,62 @@ async function getAccessTokenForBackend() {
  * Permanently delete the signed-in user's account (backend + Supabase auth cascade).
  * Caller should clear local storage, RevenueCat, and sign out after success.
  *
- * Uses fetch (not axios) for DELETE so Authorization is reliably sent on React Native.
+ * Sends Authorization + X-User-ID (matches other backend calls; dev servers without
+ * JWT secret accept X-User-ID). Tries DELETE, then POST fallback if auth fails.
  */
 export const deleteAccountOnBackend = async () => {
-  const accessToken = await getAccessTokenForBackend();
+  const accessToken = (await getAccessTokenForBackend()).trim();
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id;
 
-  const res = await fetch(`${BACKEND_URL}/api/account`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json',
-    },
-  });
+  const base = String(BACKEND_URL || '')
+    .trim()
+    .replace(/\/+$/, '');
 
-  let data = {};
-  try {
-    data = await res.json();
-  } catch (_) {
-    /* non-JSON body */
-  }
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+    Accept: 'application/json',
+    ...(userId ? { 'X-User-ID': userId } : {}),
+  };
 
-  if (!res.ok) {
+  const mapAxiosError = (error) => {
+    const status = error.response?.status;
+    const data = error.response?.data;
     const message =
-      data?.message || data?.error || `Request failed (${res.status})`;
+      data?.message || data?.error || error.message || 'Failed to delete account.';
     const err = new Error(message);
     err.code = data?.error;
-    err.status = res.status;
-    throw err;
-  }
+    err.status = status;
+    err.hint = data?.hint;
+    return err;
+  };
 
-  return data;
+  try {
+    const res = await axios.delete(`${base}/api/account`, {
+      headers,
+      timeout: 120000,
+    });
+    return res.data;
+  } catch (error) {
+    const status = error.response?.status;
+    const errCode = error.response?.data?.error;
+    if (status === 401 && errCode === 'authentication_required') {
+      try {
+        const res2 = await axios.post(
+          `${base}/api/account`,
+          { action: 'delete_account' },
+          {
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            timeout: 120000,
+          }
+        );
+        return res2.data;
+      } catch (error2) {
+        throw mapAxiosError(error2);
+      }
+    }
+    throw mapAxiosError(error);
+  }
 };
 
 // Helper function to test backend connection

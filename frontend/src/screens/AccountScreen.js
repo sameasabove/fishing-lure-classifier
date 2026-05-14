@@ -37,7 +37,11 @@ export default function AccountScreen() {
       await performAccountDeletion();
     } catch (e) {
       const msg = e?.message || 'Something went wrong. Please try again or contact support.';
-      Alert.alert('Could not delete account', msg);
+      const hint = e?.hint;
+      Alert.alert(
+        'Could not delete account',
+        hint ? `${msg}\n\n${hint}` : msg
+      );
     } finally {
       setBusy(false);
     }

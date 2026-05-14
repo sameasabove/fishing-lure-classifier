@@ -239,14 +239,25 @@ def verify_subscription():
     return jsonify({'is_pro': False, 'subscription_type': 'free'})
 
 
-@app.route('/api/account', methods=['DELETE'])
+@app.route('/api/account', methods=['DELETE', 'POST'])
 @limiter.limit('10 per hour')
 @require_auth
 def delete_account():
     """
     Full account deletion: Supabase storage, then auth user (DB cascades).
     Client must clear local data and sign out after success.
+
+    Supports POST with {"action": "delete_account"} as a fallback when some
+    clients have trouble with DELETE + auth headers.
     """
+    if request.method == 'POST':
+        payload = request.get_json(silent=True) or {}
+        if payload.get('action') != 'delete_account':
+            return jsonify({
+                'error': 'bad_request',
+                'message': 'Send JSON body: {"action": "delete_account"}',
+            }), 400
+
     user_id = g.user_id
 
     if not supabase_service.is_enabled():
