@@ -2,7 +2,7 @@
   "expo": {
     "name": "MyTackleBox",
     "slug": "fishing-lure-analyzer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fishinglure.analyzer",
-      "buildNumber": "12",
+      "buildNumber": "13",
       "deploymentTarget": "13.0",
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs access to camera to take photos of fishing lures for analysis.",
@@ -41,7 +41,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.fishinglure.analyzer",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
