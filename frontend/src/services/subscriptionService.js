@@ -20,6 +20,7 @@ import {
 export {
   formatSubscriptionDisplayPrice,
   formatSubscriptionPriceSummary,
+  getCanonicalPriceAmount,
   getPackageBillingPeriod,
   getPlanLabel,
 } from './subscriptionPricing';
