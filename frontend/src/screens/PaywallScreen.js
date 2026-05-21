@@ -22,6 +22,7 @@ import {
   restorePurchases,
   initializeSubscriptions,
   formatSubscriptionDisplayPrice,
+  getCanonicalPriceAmount,
   getPackageBillingPeriod,
   getPlanLabel,
 } from '../services/subscriptionService';
@@ -134,8 +135,8 @@ export default function PaywallScreen({ navigation, route }) {
   const annualSavingsPercent = useMemo(() => {
     const monthly = packages.find((p) => getPackageBillingPeriod(p) === 'month');
     const annual = packages.find((p) => getPackageBillingPeriod(p) === 'year');
-    const mp = monthly?.storeProduct?.price ?? monthly?.product?.price;
-    const ap = annual?.storeProduct?.price ?? annual?.product?.price;
+    const mp = getCanonicalPriceAmount(monthly);
+    const ap = getCanonicalPriceAmount(annual);
     if (typeof mp !== 'number' || typeof ap !== 'number' || mp <= 0) return null;
     const yearlyIfMonthly = mp * 12;
     if (yearlyIfMonthly <= 0) return null;

@@ -10,7 +10,7 @@ import axios from 'axios';
 import { BACKEND_URL } from './backendService';
 import { CONFIG, SUBSCRIPTION } from '../core/config';
 import {
-  FALLBACK_CAD,
+  CANONICAL_CAD,
   formatCad,
   formatSubscriptionDisplayPrice,
   formatSubscriptionPriceSummary,
@@ -546,7 +546,7 @@ const getFallbackPackages = () => {
       description,
       title,
       price,
-      currencyCode: FALLBACK_CAD.currencyCode,
+        currencyCode: CANONICAL_CAD.currencyCode,
       priceString: formatCad(price),
       subscriptionPeriod,
     },
@@ -558,7 +558,7 @@ const getFallbackPackages = () => {
       'Monthly PRO',
       'Unlimited scans, billed monthly',
       'MONTHLY',
-      FALLBACK_CAD.monthly,
+      CANONICAL_CAD.monthly,
       'P1M'
     ),
     createMockPackage(
@@ -566,7 +566,7 @@ const getFallbackPackages = () => {
       'Annual PRO',
       'Unlimited scans, billed annually',
       'ANNUAL',
-      FALLBACK_CAD.yearly,
+      CANONICAL_CAD.yearly,
       'P1Y'
     ),
   ];

@@ -2,6 +2,7 @@ const {
   getPackageBillingPeriod,
   formatSubscriptionDisplayPrice,
   formatSubscriptionPriceSummary,
+  getCanonicalPriceAmount,
   getPlanLabel,
 } = require('../subscriptionPricing');
 
@@ -40,6 +41,35 @@ describe('subscription display pricing', () => {
         product: { identifier: 'yearly_pro', subscriptionPeriod: null },
       })
     ).toBe('year');
+  });
+
+  it('always shows canonical CAD for monthly_pro and yearly_pro', () => {
+    const staleMonthly = {
+      identifier: '$rc_monthly',
+      packageType: 'MONTHLY',
+      product: {
+        identifier: 'monthly_pro',
+        price: 4.99,
+        currencyCode: 'USD',
+        priceString: '$4.99',
+        subscriptionPeriod: 'P1M',
+      },
+    };
+    const staleYearly = {
+      identifier: '$rc_annual',
+      packageType: 'ANNUAL',
+      product: {
+        identifier: 'yearly_pro',
+        price: 39.99,
+        currencyCode: 'USD',
+        priceString: '$39.99',
+        subscriptionPeriod: 'P1Y',
+      },
+    };
+    expect(formatSubscriptionDisplayPrice(staleMonthly)).toBe('CA$6.99/month');
+    expect(formatSubscriptionDisplayPrice(staleYearly)).toBe('CA$49.99/year');
+    expect(getCanonicalPriceAmount(staleMonthly)).toBe(6.99);
+    expect(getCanonicalPriceAmount(staleYearly)).toBe(49.99);
   });
 
   it('prefers StoreKit priceString over numeric price formatting', () => {
