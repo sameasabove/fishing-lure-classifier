@@ -46,14 +46,14 @@ Product: monthly
 **App Store Connect:**
 - Go to your app → Features → In-App Purchases
 - Create subscription product
-- **Set price here:** $4.99/month
-- Product ID must match: `monthly`
+- **Set price here:** CA$6.99/month (Canada)
+- Product ID must match: `monthly_pro`
 
 **Google Play Console:**
 - Go to Monetize → Subscriptions
 - Create subscription
-- **Set price here:** $4.99/month
-- Product ID must match: `monthly`
+- **Set price here:** CA$6.99/month (Canada)
+- Product ID must match: `monthly_pro`
 
 ---
 
@@ -62,9 +62,8 @@ Product: monthly
 ### What You Need to Do:
 
 1. **Just create the products with IDs:**
-   - `monthly`
-   - `yearly`
-   - `lifetime`
+   - `monthly_pro`
+   - `yearly_pro`
 
 2. **Don't worry about pricing yet!**
    - RevenueCat will work without prices
@@ -88,14 +87,6 @@ Price: (Leave empty or N/A - that's OK!)
 Identifier: yearly
 Type: Subscription (Auto-renewable)
 Store Product ID: yearly
-Price: (Leave empty - that's OK!)
-```
-
-### Product 3: Lifetime
-```
-Identifier: lifetime
-Type: Non-consumable (One-time purchase)
-Store Product ID: lifetime
 Price: (Leave empty - that's OK!)
 ```
 
@@ -124,8 +115,8 @@ Price: (Leave empty - that's OK!)
 3. Test in app (prices may show as N/A - that's OK!) ✅
 
 ### Later (Production):
-1. Create products in App Store Connect with prices ($4.99)
-2. Create products in Google Play Console with prices ($4.99)
+1. Create products in App Store Connect with prices (CA$6.99 / CA$49.99 in Canada)
+2. Create products in Google Play Console with matching regional prices
 3. Connect stores to RevenueCat
 4. RevenueCat will automatically get prices from stores
 5. Prices will show correctly in your app
@@ -137,11 +128,10 @@ Price: (Leave empty - that's OK!)
 ### Do Now in RevenueCat:
 - [ ] Create product: `monthly` (no price needed)
 - [ ] Create product: `yearly` (no price needed)
-- [ ] Create product: `lifetime` (no price needed)
 - [ ] Don't worry about pricing fields!
 
 ### Do Later in Stores:
-- [ ] Set prices in App Store Connect ($4.99, $39.99, $49.99)
+- [ ] Set prices in App Store Connect (CA$6.99/month, CA$49.99/year in Canada)
 - [ ] Set prices in Google Play Console
 - [ ] Connect stores to RevenueCat
 - [ ] Prices will appear automatically

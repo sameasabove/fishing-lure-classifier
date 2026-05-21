@@ -9,6 +9,14 @@ import { supabase } from '../config/supabase';
 import axios from 'axios';
 import { BACKEND_URL } from './backendService';
 import { CONFIG, SUBSCRIPTION } from '../core/config';
+import {
+  FALLBACK_CAD,
+  formatCad,
+  formatSubscriptionDisplayPrice,
+  getPackageBillingPeriod,
+} from './subscriptionPricing';
+
+export { formatSubscriptionDisplayPrice, getPackageBillingPeriod } from './subscriptionPricing';
 
 // ============================================================================
 // CONFIGURATION
@@ -401,9 +409,10 @@ export const getSubscriptionPackages = async () => {
       if (__DEV__) {
         console.log('[Subscriptions] Loaded', packages.length, 'packages from RevenueCat (monthly/yearly only)');
       }
+      const resolved = packages.length > 0 ? packages : getFallbackPackages();
       return {
         success: true,
-        packages: packages.length > 0 ? packages : getFallbackPackages(),
+        packages: resolved,
         isFallback: packages.length === 0,
         current: offerings.current,
       };
@@ -435,26 +444,24 @@ export const getSubscriptionPackages = async () => {
 };
 
 /**
- * Create fallback packages when RevenueCat isn't configured or offerings aren't available
- * These are mock packages for testing/development
+ * Create fallback packages when RevenueCat isn't configured or offerings aren't available.
+ * Used in dev only — production should always load StoreKit prices via RevenueCat.
  */
 const getFallbackPackages = () => {
-  // Align with primary App Store storefront (Canada): keep numeric price + currency so UI matches StoreKit.
-  const createMockPackage = (identifier, title, description, packageType, price, currencyCode) => {
-    return {
+  const createMockPackage = (identifier, title, description, packageType, price, subscriptionPeriod) => ({
+    identifier,
+    packageType,
+    isFallback: true,
+    product: {
       identifier,
-      packageType,
-      isFallback: true, // Mark so purchase returns needsConfiguration
-      product: {
-        identifier: identifier,
-        description: description,
-        title: title,
-        price,
-        currencyCode,
-        priceString: '',
-      },
-    };
-  };
+      description,
+      title,
+      price,
+      currencyCode: FALLBACK_CAD.currencyCode,
+      priceString: formatCad(price),
+      subscriptionPeriod,
+    },
+  });
 
   return [
     createMockPackage(
@@ -462,16 +469,16 @@ const getFallbackPackages = () => {
       'Monthly PRO',
       'Unlimited scans, billed monthly',
       'MONTHLY',
-      6.99,
-      'CAD'
+      FALLBACK_CAD.monthly,
+      'P1M'
     ),
     createMockPackage(
       PRODUCT_IDS.YEARLY,
       'Annual PRO',
       'Unlimited scans, billed annually',
       'ANNUAL',
-      49.99,
-      'CAD'
+      FALLBACK_CAD.yearly,
+      'P1Y'
     ),
   ];
 };
@@ -1103,6 +1110,8 @@ export default {
   
   // Packages
   getSubscriptionPackages,
+  getPackageBillingPeriod,
+  formatSubscriptionDisplayPrice,
   
   // Purchase
   purchaseSubscription,

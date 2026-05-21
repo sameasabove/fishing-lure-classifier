@@ -110,8 +110,8 @@ const REVENUECAT_API_KEY_ANDROID = 'your-android-key';
 ### 3. Create Subscription Products
 
 **Product IDs (same for both stores):** `monthly_pro`, `yearly_pro` (no lifetime).
-- `monthly_pro` - $4.99/month
-- `yearly_pro` - $39.99/year
+- `monthly_pro` - CA$6.99/month (Canada App Store; other regions may differ)
+- `yearly_pro` - CA$49.99/year (Canada App Store; other regions may differ)
 
 **Early adoption pricing** — locked in for our first wave of users.
 
@@ -132,8 +132,8 @@ const REVENUECAT_API_KEY_ANDROID = 'your-android-key';
 | Tier | Price | Features |
 |------|-------|----------|
 | **Free** | $0 | 10 scans/month, basic features |
-| **PRO Monthly** | $4.99/mo | Unlimited scans, catches, advanced features |
-| **PRO Yearly** | $39.99/yr | Save 33%, all PRO features |
+| **PRO Monthly** | CA$6.99/mo | Unlimited scans, catches, advanced features |
+| **PRO Yearly** | CA$49.99/yr | Save ~40%, all PRO features |
 
 *Current PRO prices are early adoption pricing and stay for our first wave of users.*
 

@@ -24,7 +24,7 @@
    - [ ] **Product ID:** `monthly_pro` (must match exactly).
    - [ ] **Reference name:** Monthly Pro Subscription.
    - [ ] **Duration:** 1 month.
-   - [ ] **Price:** Add price for **Canada (CAD)** – e.g. ~$6.99 CAD (or use Apple’s equivalent to $4.99 USD). Early adoption.
+   - [ ] **Price:** Add price for **Canada (CAD)** – **CA$6.99/month**. Early adoption.
    - [ ] **Display name:** Monthly Pro.
    - [ ] **Description:** Unlimited lure scans, full catch tracking, all premium features. Billed monthly.
    - [ ] **Availability:** This subscription → **Availability** → **Select specific countries** → **Canada only**.
@@ -35,7 +35,7 @@
    - [ ] **Product ID:** `yearly_pro` (must match exactly).
    - [ ] **Reference name:** Yearly Pro Subscription.
    - [ ] **Duration:** 1 year.
-   - [ ] **Price:** Add price for **Canada (CAD)** – e.g. ~$54.99 CAD (or Apple’s equivalent to $39.99 USD). Early adoption.
+   - [ ] **Price:** Add price for **Canada (CAD)** – **CA$49.99/year**. Early adoption.
    - [ ] **Display name:** Yearly Pro.
    - [ ] **Description:** Save 33%! Unlimited lure scans, full catch tracking, all premium features. Billed annually.
    - [ ] **Availability:** **Canada only**.
@@ -57,7 +57,7 @@
    - [ ] **Category:** Sports (or Lifestyle)
    - [ ] **Age rating:** Complete questionnaire (likely 4+)
 
-3. **Description** (4000 chars max) – paste the block below (correct pricing: $4.99 / $39.99, 10 free scans, no lifetime):
+3. **Description** (4000 chars max) – paste the block below (correct pricing: CA$6.99 / CA$49.99, 10 free scans, no lifetime):
 
    ```
    MY TACKLE BOX - YOUR DIGITAL FISHING COMPANION
@@ -88,13 +88,13 @@
    - 10 lure scans per month
    - Basic tackle box and catch tracking
 
-   PRO MONTHLY - $4.99/month:
+   PRO MONTHLY - CA$6.99/month (Canada App Store):
    - Unlimited lure scans
    - Full catch tracking and tackle box features
    - All premium features
 
-   PRO YEARLY - $39.99/year:
-   - Save 33% vs monthly
+   PRO YEARLY - CA$49.99/year (Canada App Store):
+   - Save about 40% vs monthly
    - All PRO features
 
    PRIVACY & SECURITY
@@ -194,4 +194,4 @@
 ---
 
 **This is the only step-by-step file you need for Apple launch (Canada).**  
-For long-form copy variants or Google Play later, see `APP_STORE_ASSETS_MYTACKLEBOX.md` (update pricing there to $4.99 / $39.99 and remove lifetime if you use it).
+For long-form copy variants or Google Play later, see `APP_STORE_ASSETS_MYTACKLEBOX.md` (pricing aligned to CA$6.99 / CA$49.99, no lifetime).

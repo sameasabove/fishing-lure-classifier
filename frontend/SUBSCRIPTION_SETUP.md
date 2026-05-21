@@ -50,28 +50,20 @@ cd ios && pod install && cd ..
 
 **Monthly Subscription:**
 ```
-Reference Name: Fishing Lure PRO Monthly
-Product ID: fishing_lure_pro_monthly
+Reference Name: My Tackle Box PRO Monthly
+Product ID: monthly_pro
 Type: Auto-Renewable Subscription
 Subscription Group: pro_access
-Price: $4.99/month
+Price: CA$6.99/month (Canada App Store)
 ```
 
 **Yearly Subscription:**
 ```
-Reference Name: Fishing Lure PRO Yearly
-Product ID: fishing_lure_pro_yearly
+Reference Name: My Tackle Box PRO Yearly
+Product ID: yearly_pro
 Type: Auto-Renewable Subscription
 Subscription Group: pro_access
-Price: $39.99/year
-```
-
-**Lifetime Purchase:**
-```
-Reference Name: Fishing Lure Lifetime
-Product ID: fishing_lure_lifetime
-Type: Non-Consumable
-Price: $49.99
+Price: CA$49.99/year (Canada App Store)
 ```
 
 ### 3.3 Connect to RevenueCat
@@ -95,29 +87,21 @@ Price: $49.99
 
 **Monthly Subscription:**
 ```
-Product ID: fishing_lure_pro_monthly
-Name: Fishing Lure PRO (Monthly)
+Product ID: monthly_pro
+Name: My Tackle Box PRO (Monthly)
 Description: Unlimited lure scans and advanced features
-Price: $4.99/month
+Price: CA$6.99/month (set per region in Play Console)
 Free trial: 7 days (optional)
 Billing period: 1 month
 ```
 
 **Yearly Subscription:**
 ```
-Product ID: fishing_lure_pro_yearly
-Name: Fishing Lure PRO (Yearly)
-Description: Unlimited lure scans - Save 33%!
-Price: $39.99/year
+Product ID: yearly_pro
+Name: My Tackle Box PRO (Yearly)
+Description: Unlimited lure scans - Save about 40%!
+Price: CA$49.99/year (set per region in Play Console)
 Billing period: 1 year
-```
-
-**Lifetime Purchase:**
-```
-Product ID: fishing_lure_lifetime
-Type: In-app product (not subscription)
-Name: Fishing Lure Lifetime Access
-Price: $49.99
 ```
 
 ### 4.3 Connect to RevenueCat
@@ -139,10 +123,9 @@ Price: $49.99
    Description: Unlocks all PRO features
    ```
 
-4. **Attach Products** to "pro" entitlement:
-   - ✓ fishing_lure_pro_monthly
-   - ✓ fishing_lure_pro_yearly
-   - ✓ fishing_lure_lifetime
+4. **Attach Products** to "MyTackleBox Pro" entitlement:
+   - ✓ monthly_pro
+   - ✓ yearly_pro
 
 5. Click **Save**
 
@@ -161,9 +144,8 @@ const REVENUECAT_API_KEY_ANDROID = 'goog_YOUR_ANDROID_KEY_HERE';
 
 // Product IDs must match what you created in stores
 export const PRODUCT_IDS = {
-  MONTHLY: 'fishing_lure_pro_monthly',
-  YEARLY: 'fishing_lure_pro_yearly',
-  LIFETIME: 'fishing_lure_lifetime',
+  MONTHLY: 'monthly_pro',
+  YEARLY: 'yearly_pro',
 };
 ```
 

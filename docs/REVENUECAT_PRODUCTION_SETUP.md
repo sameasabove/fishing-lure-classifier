@@ -85,14 +85,13 @@ Make sure in RevenueCat dashboard you have:
 - **Display Name:** MyTackleBox Pro
 
 ### Products:
-- **monthly** - Auto-renewable subscription
-- **yearly** - Auto-renewable subscription  
-- **lifetime** - Non-consumable (one-time purchase)
+- **monthly_pro** - Auto-renewable subscription
+- **yearly_pro** - Auto-renewable subscription
 
-All three products should be attached to the `MyTackleBox Pro` entitlement.
+Both products should be attached to the `MyTackleBox Pro` entitlement.
 
 ### Offering:
-- **Default offering** should include all three packages
+- **Default offering** should include monthly and yearly packages only (no lifetime)
 
 ---
 
@@ -104,34 +103,28 @@ All three products should be attached to the `MyTackleBox Pro` entitlement.
 2. Select your app: MyTackleBox
 3. Go to: **Features** → **In-App Purchases**
 4. Create subscription group (if first time)
-5. Create three subscription products:
-   - **Product ID:** `monthly`
+5. Create two subscription products:
+   - **Product ID:** `monthly_pro`
      - Type: Auto-Renewable Subscription
-     - Price: Set your price (e.g., $4.99/month)
-   - **Product ID:** `yearly`
+     - Price: CA$6.99/month (Canada)
+   - **Product ID:** `yearly_pro`
      - Type: Auto-Renewable Subscription
-     - Price: Set your price (e.g., $39.99/year)
-   - **Product ID:** `lifetime`
-     - Type: Non-Consumable
-     - Price: Set your price (e.g., $99.99)
+     - Price: CA$49.99/year (Canada)
 
 ### Google Play Console (Android):
 
 1. Go to Google Play Console: https://play.google.com/console/
 2. Select your app: MyTackleBox
 3. Go to: **Monetize** → **Subscriptions** (or **Products** → **In-app products**)
-4. Create three products:
-   - **Product ID:** `monthly`
+4. Create two products:
+   - **Product ID:** `monthly_pro`
      - Type: Subscription
-     - Price: Set your price
-   - **Product ID:** `yearly`
+     - Price: CA$6.99/month (Canada)
+   - **Product ID:** `yearly_pro`
      - Type: Subscription
-     - Price: Set your price
-   - **Product ID:** `lifetime`
-     - Type: One-time product
-     - Price: Set your price
+     - Price: CA$49.99/year (Canada)
 
-**Important:** Product IDs must match exactly: `monthly`, `yearly`, `lifetime`
+**Important:** Product IDs must match exactly: `monthly_pro`, `yearly_pro`
 
 ---
 

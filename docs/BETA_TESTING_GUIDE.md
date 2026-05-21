@@ -191,7 +191,7 @@ Fishing Lure App - Beta Feedback
 6. Did you try catch logging? (Yes/No)
 7. Any bugs or crashes?
 8. What features would you like?
-9. Would you pay $4.99/month for this? (Yes/No)
+9. Would you pay CA$6.99/month for this? (Yes/No)
 10. Any other feedback?
 
 Email (optional):

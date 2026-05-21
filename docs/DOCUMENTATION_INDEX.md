@@ -5,7 +5,7 @@ Quick reference for all documentation files in the project.
 ## 🚀 App Launch – Apple App Store (Canada)
 
 - **`LAUNCH_CHECKLIST.md`** – **Start here.** Single step-by-step checklist to get My Tackle Box live on the Apple App Store (Canada only). In-App Purchases, app info, screenshots, RevenueCat, build, submit.
-- **`APP_STORE_ASSETS_MYTACKLEBOX.md`** – Optional: extra app name, descriptions, keywords (update to $4.99 / $39.99 and no lifetime if you use it).
+- **`APP_STORE_ASSETS_MYTACKLEBOX.md`** – Optional: extra app name, descriptions, keywords (CA$6.99 / CA$49.99, no lifetime).
 - **`APP_STORE_CONNECT_API_KEY_GUIDE.md`** – How to generate App Store Connect API keys for RevenueCat
 - **`APPLE_DEVELOPER_ACCOUNT_GUIDE.md`** – Apple Developer Program requirements
 - **`DEPLOYMENT_GUIDE.md`** – Backend deployment guide
@@ -27,6 +27,7 @@ Quick reference for all documentation files in the project.
 
 ## ⚙️ Setup & Configuration
 
+- **`SUPABASE_EMAIL_BRANDING.md`** – Branded signup confirmation & password reset emails (Supabase templates + GitHub Pages)
 - **`SUPABASE_KEEP_ALIVE_SETUP.md`** – Keep-alive setup for Supabase (if needed)
 
 ## 📄 Legal Documents

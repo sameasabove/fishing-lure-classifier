@@ -14,14 +14,19 @@ import { AUTH } from '../core/config';
  */
 export const signUp = async (email, password, fullName) => {
   try {
+    const options = {
+      data: {
+        full_name: fullName,
+      },
+    };
+    if (AUTH.emailConfirmRedirectUrl) {
+      options.emailRedirectTo = AUTH.emailConfirmRedirectUrl;
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
+      options,
     });
 
     if (error) throw error;

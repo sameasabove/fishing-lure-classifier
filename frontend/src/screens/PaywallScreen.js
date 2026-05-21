@@ -21,6 +21,8 @@ import {
   purchaseSubscription,
   restorePurchases,
   initializeSubscriptions,
+  formatSubscriptionDisplayPrice,
+  getPackageBillingPeriod,
 } from '../services/subscriptionService';
 import { LEGAL } from '../core/config';
 import { useAuth } from '../contexts/AuthContext';
@@ -61,9 +63,7 @@ export default function PaywallScreen({ navigation, route }) {
     if (result.success && result.packages.length > 0) {
       setPackages(result.packages);
       // Auto-select the annual package (best value)
-      const annualPkg = result.packages.find(pkg => 
-        pkg.packageType === 'ANNUAL' || pkg.identifier.includes('annual') || pkg.identifier.includes('yearly')
-      );
+      const annualPkg = result.packages.find((pkg) => getPackageBillingPeriod(pkg) === 'year');
       setSelectedPackage(annualPkg || result.packages[0]);
       
       // Show warning if using fallback packages (RevenueCat not configured)
@@ -131,18 +131,8 @@ export default function PaywallScreen({ navigation, route }) {
   };
 
   const annualSavingsPercent = useMemo(() => {
-    const monthly = packages.find(
-      (p) =>
-        p.packageType === 'MONTHLY' ||
-        /\bmonth\b/i.test(p.identifier) ||
-        p.product?.identifier === 'monthly_pro'
-    );
-    const annual = packages.find(
-      (p) =>
-        p.packageType === 'ANNUAL' ||
-        /annual|yearly/i.test(p.identifier) ||
-        p.product?.identifier === 'yearly_pro'
-    );
+    const monthly = packages.find((p) => getPackageBillingPeriod(p) === 'month');
+    const annual = packages.find((p) => getPackageBillingPeriod(p) === 'year');
     const mp = monthly?.product?.price;
     const ap = annual?.product?.price;
     if (typeof mp !== 'number' || typeof ap !== 'number' || mp <= 0) return null;
@@ -237,7 +227,7 @@ export default function PaywallScreen({ navigation, route }) {
             <Text style={styles.subscriptionLegalLine}>
               {selectedPackage.product?.title || 'PRO'} — {getPackageTitle(selectedPackage)} —{' '}
               {getPackageDescription(selectedPackage)} —{' '}
-              {formatProductPrice(selectedPackage.product, pricePeriodForPackage(selectedPackage))}
+              {formatSubscriptionDisplayPrice(selectedPackage)}
             </Text>
             <View style={styles.legalLinksRow}>
               <Text
@@ -318,10 +308,7 @@ const Feature = ({ icon, text, highlight }) => (
 );
 
 const PackageCard = ({ package: pkg, isSelected, onPress, annualSavingsPercent }) => {
-  // Determine if this is the best value
-  const isBestValue = pkg.packageType === 'ANNUAL' || 
-                      pkg.identifier.includes('annual') ||
-                      pkg.identifier.includes('yearly');
+  const isBestValue = getPackageBillingPeriod(pkg) === 'year';
   
   // Get package details
   const product = pkg.product;
@@ -361,7 +348,7 @@ const PackageCard = ({ package: pkg, isSelected, onPress, annualSavingsPercent }
           styles.packagePrice,
           isSelected && styles.packagePriceSelected
         ]}>
-          {formatProductPrice(product, pricePeriodForPackage(pkg))}
+          {formatSubscriptionDisplayPrice(pkg)}
         </Text>
       </View>
       
@@ -387,50 +374,17 @@ const PackageCard = ({ package: pkg, isSelected, onPress, annualSavingsPercent }
 // ============================================================================
 
 const getPackageTitle = (pkg) => {
-  const id = pkg.identifier.toLowerCase();
-  if (id.includes('annual') || id.includes('yearly')) return 'Annual';
-  if (id.includes('month')) return 'Monthly';
-  return pkg.product.title;
+  const period = getPackageBillingPeriod(pkg);
+  if (period === 'year') return 'Annual';
+  if (period === 'month') return 'Monthly';
+  return pkg.product?.title || 'PRO';
 };
 
 const getPackageDescription = (pkg) => {
-  const id = pkg.identifier.toLowerCase();
-  if (id.includes('annual') || id.includes('yearly')) return 'Billed once per year';
-  if (id.includes('month')) return 'Billed monthly';
-  return pkg.product.description;
-};
-
-/** Match App Store sheet: use StoreKit/RevenueCat numeric price + ISO currency when available. */
-const formatProductPrice = (product, period) => {
-  if (!product) return '';
-  const raw = product.price;
-  const price = typeof raw === 'number' ? raw : typeof raw === 'string' ? parseFloat(raw) : NaN;
-  const code = product.currencyCode;
-  if (!Number.isNaN(price) && code) {
-    try {
-      const locale = code === 'CAD' ? 'en-CA' : undefined;
-      const formatted = new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency: code,
-      }).format(price);
-      if (period === 'month') return `${formatted}/month`;
-      if (period === 'year') return `${formatted}/year`;
-      return formatted;
-    } catch (_) {
-      /* use priceString */
-    }
-  }
-  return product.priceString || '';
-};
-
-const pricePeriodForPackage = (pkg) => {
-  if (!pkg) return null;
-  const id = pkg.identifier?.toLowerCase() ?? '';
-  if (id.includes('annual') || id.includes('yearly')) return 'year';
-  if (id.includes('month')) return 'month';
-  if (pkg.packageType === 'ANNUAL') return 'year';
-  if (pkg.packageType === 'MONTHLY') return 'month';
-  return null;
+  const period = getPackageBillingPeriod(pkg);
+  if (period === 'year') return 'Billed once per year';
+  if (period === 'month') return 'Billed monthly';
+  return pkg.product?.description || '';
 };
 
 // ============================================================================

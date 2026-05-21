@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email confirmed – My Tackle Box</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .box {
+      background: #fff;
+      padding: 36px 28px;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .emoji { font-size: 48px; margin-bottom: 8px; }
+    h1 { color: #1b5e20; font-size: 1.35rem; margin: 0 0 8px; }
+    p { color: #333; line-height: 1.55; margin: 0 0 16px; font-size: 15px; }
+    .success {
+      background: #e8f5e9;
+      color: #1b5e20;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .hint { font-size: 13px; color: #666; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div id="loadingStep">
+      <p class="emoji">🎣</p>
+      <h1>My Tackle Box</h1>
+      <p>Confirming your email…</p>
+    </div>
+    <div id="successStep" class="hidden">
+      <p class="emoji">🎣</p>
+      <h1>You're all set!</h1>
+      <p class="success">Your email is confirmed.</p>
+      <p>Open the <strong>My Tackle Box</strong> app and sign in with your email and password.</p>
+      <p class="hint">You can close this page.</p>
+    </div>
+    <div id="invalidStep" class="hidden">
+      <p class="emoji">🎣</p>
+      <h1>Link expired or invalid</h1>
+      <p>This confirmation link may have expired. In the app, try signing up again or request a new confirmation email from Supabase support settings.</p>
+      <p class="hint">Open the link in Safari or Chrome, not your email app's in-app browser.</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      // Replace with your project values, or host via the same GitHub Pages setup as password-reset-success.html
+      var SUPABASE_URL = 'https://wisqqrerjbfbdiorlxtn.supabase.co';
+      var SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indpc3FxcmVyamJmYmRpb3JseHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2Mjc1NzEsImV4cCI6MjA3NjIwMzU3MX0.Wq0SYq1KafI_lputqfTjKzf6ruCMK9v0LoOlo6KqYxo';
+
+      function parseParams(str) {
+        if (!str) return {};
+        var params = {};
+        str.replace(/^[#?]/, '').split('&').forEach(function (p) {
+          var kv = p.split('=');
+          if (kv[0] && kv[1]) params[kv[0]] = decodeURIComponent(kv[1].replace(/\+/g, ' '));
+        });
+        return params;
+      }
+
+      var params = Object.assign(
+        {},
+        parseParams(window.location.search),
+        parseParams(window.location.hash)
+      );
+      var code = params.code;
+      var accessToken = params.access_token;
+      var refreshToken = params.refresh_token;
+
+      var loading = document.getElementById('loadingStep');
+      var success = document.getElementById('successStep');
+      var invalid = document.getElementById('invalidStep');
+
+      function showSuccess() {
+        loading.classList.add('hidden');
+        invalid.classList.add('hidden');
+        success.classList.remove('hidden');
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+
+      function showInvalid() {
+        loading.classList.add('hidden');
+        success.classList.add('hidden');
+        invalid.classList.remove('hidden');
+      }
+
+      var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+      if (code) {
+        supabase.auth
+          .exchangeCodeForSession(code)
+          .then(showSuccess)
+          .catch(showInvalid);
+        return;
+      }
+
+      if (accessToken && refreshToken) {
+        supabase.auth
+          .setSession({ access_token: accessToken, refresh_token: refreshToken })
+          .then(showSuccess)
+          .catch(showInvalid);
+        return;
+      }
+
+      showInvalid();
+    })();
+  </script>
+</body>
+</html>

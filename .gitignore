@@ -146,7 +146,8 @@ uploads/
 *.log
 
 # Configuration files with sensitive data
-
+# Personal credential checklist — keep filled copy local only
+docs/CREDENTIALS_VAULT_TEMPLATE.md
 
 # ngrok
 ngrok.exe

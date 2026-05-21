@@ -37,8 +37,9 @@ export const CONFIG = {
 export const AUTH = {
   // Password reset redirects here after the user clicks the email link.
   // Must also be allowlisted in Supabase: Authentication → URL Configuration → Redirect URLs.
-  // Update this to your own GitHub Pages URL (or a custom domain) before shipping.
   passwordResetRedirectUrl: process.env.EXPO_PUBLIC_PASSWORD_RESET_URL ?? '',
+  // Signup confirmation email opens this branded page (host confirm-email-success.html).
+  emailConfirmRedirectUrl: process.env.EXPO_PUBLIC_EMAIL_CONFIRM_REDIRECT_URL ?? '',
 };
 
 /** Public legal URLs (App Store 3.1.2 — must appear in the subscription purchase UI). */

@@ -83,26 +83,21 @@ Transform your fishing experience with My Tackle Box, the all-in-one app that co
 💰 SUBSCRIPTION OPTIONS
 
 FREE TIER:
-• 3 lure identifications per month
+• 10 lure identifications per month
 • Basic tackle box features
 • Limited catch tracking
 
-PRO MONTHLY - $9.99/month:
+PRO MONTHLY - CA$6.99/month (Canada App Store):
 • Unlimited lure identifications
 • Full catch tracking with photos
 • Advanced tackle box features
 • Priority support
 • All premium features
 
-PRO YEARLY - $79.99/year:
-• Save 33% vs monthly
+PRO YEARLY - CA$49.99/year (Canada App Store):
+• Save about 40% vs monthly
 • All PRO features
 • Best value for serious anglers
-
-LIFETIME - $99.99:
-• One-time payment
-• All features forever
-• No recurring charges
 
 🔒 PRIVACY & SECURITY
 • Your data is 100% private and secure
@@ -200,26 +195,21 @@ Transform your fishing experience with My Tackle Box, the all-in-one app that co
 💰 SUBSCRIPTION OPTIONS
 
 FREE TIER:
-• 3 lure identifications per month
+• 10 lure identifications per month
 • Basic tackle box features
 • Limited catch tracking
 
-PRO MONTHLY - $9.99/month:
+PRO MONTHLY - CA$6.99/month (Canada App Store):
 • Unlimited lure identifications
 • Full catch tracking with photos
 • Advanced tackle box features
 • Priority support
 • All premium features
 
-PRO YEARLY - $79.99/year:
-• Save 33% vs monthly
+PRO YEARLY - CA$49.99/year (Canada App Store):
+• Save about 40% vs monthly
 • All PRO features
 • Best value for serious anglers
-
-LIFETIME - $99.99:
-• One-time payment
-• All features forever
-• No recurring charges
 
 🔒 PRIVACY & SECURITY
 • Your data is 100% private and secure
@@ -362,7 +352,7 @@ Terms of Service: https://ericfernandes71.github.io/fishing-lure-classifier/TERM
 ### Pricing:
 - [ ] Free app with in-app purchases
 - [ ] Subscription products created
-- [ ] Pricing set ($4.99/month, $39.99/year, $49.99 lifetime)
+- [ ] Pricing set (CA$6.99/month, CA$49.99/year — Canada; no lifetime)
 
 ---
 

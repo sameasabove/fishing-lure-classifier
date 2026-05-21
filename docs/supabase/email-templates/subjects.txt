@@ -1,0 +1,16 @@
+# Suggested subject lines (Supabase → Authentication → Emails → each template → Subject)
+
+Confirm signup:
+  Confirm your My Tackle Box account 🎣
+
+Reset password:
+  Reset your My Tackle Box password
+
+Magic link:
+  Sign in to My Tackle Box
+
+Change email address:
+  Confirm your new email for My Tackle Box
+
+Invite user:
+  You're invited to My Tackle Box

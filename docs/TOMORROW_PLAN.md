@@ -17,9 +17,8 @@
   - Identifier: `pro`
   - Display name: "MyTackleBox Pro"
 - [ ] Create/verify products:
-  - `monthly` - Monthly subscription ($4.99)
-  - `yearly` - Yearly subscription ($39.99)  
-  - `lifetime` - One-time purchase ($49.99)
+  - `monthly_pro` - Monthly subscription (CA$6.99/month, Canada)
+  - `yearly_pro` - Yearly subscription (CA$49.99/year, Canada)
 - [ ] Create offering:
   - Set as default offering
   - Add all 3 packages (monthly, yearly, lifetime)
@@ -100,11 +99,11 @@
 - [ ] Create subscription: `monthly`
   - Product ID: `monthly` (or `fishing_lure_pro_monthly` if you prefer)
   - Name: MyTackleBox PRO (Monthly)
-  - Price: $4.99/month
+  - Price: CA$6.99/month
 - [ ] Create subscription: `yearly`
   - Product ID: `yearly`
   - Name: MyTackleBox PRO (Yearly)
-  - Price: $39.99/year
+  - Price: CA$49.99/year
 - [ ] Create in-app product: `lifetime`
   - Product ID: `lifetime`
   - Name: MyTackleBox Lifetime Access
@@ -114,10 +113,10 @@
 - [ ] Create subscription group: "PRO Access"
 - [ ] Create subscription: `monthly`
   - Product ID: `monthly`
-  - Price: $4.99/month
+  - Price: CA$6.99/month
 - [ ] Create subscription: `yearly`
   - Product ID: `yearly`
-  - Price: $39.99/year
+  - Price: CA$49.99/year
 - [ ] Create non-consumable: `lifetime`
   - Product ID: `lifetime`
   - Price: $49.99
