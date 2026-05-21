@@ -14,7 +14,12 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { testBackendConnection } from '../services/backendService';
 import { useAuth } from '../contexts/AuthContext';
-import { getSubscriptionInfo, syncSubscription, openSubscriptionManagement } from '../services/subscriptionService';
+import {
+  getSubscriptionInfo,
+  getSubscriptionPriceSummary,
+  syncSubscription,
+  openSubscriptionManagement,
+} from '../services/subscriptionService';
 
 export default function SettingsScreen() {
   const [autoSave, setAutoSave] = useState(true);
@@ -22,6 +27,7 @@ export default function SettingsScreen() {
   const [backendStatus, setBackendStatus] = useState(null);
   const [isCheckingBackend, setIsCheckingBackend] = useState(false);
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
+  const [priceSummary, setPriceSummary] = useState(null);
   const { user, signOut } = useAuth();
   const navigation = useNavigation();
 
@@ -44,6 +50,12 @@ export default function SettingsScreen() {
       // Force refresh to get latest subscription data from RevenueCat
       const info = await getSubscriptionInfo(true);
       setSubscriptionInfo(info);
+      if (!info?.isPro) {
+        const summary = await getSubscriptionPriceSummary();
+        setPriceSummary(summary);
+      } else {
+        setPriceSummary(null);
+      }
       // Sync to Supabase after getting fresh data
       await syncSubscription();
       if (__DEV__) {
@@ -197,7 +209,12 @@ export default function SettingsScreen() {
                     <Text style={styles.membershipAction}>Tap to manage subscription →</Text>
                   )}
                   {!subscriptionInfo.isPro && (
-                    <Text style={styles.membershipAction}>Tap to upgrade →</Text>
+                    <>
+                      {priceSummary ? (
+                        <Text style={styles.membershipPrice}>{priceSummary}</Text>
+                      ) : null}
+                      <Text style={styles.membershipAction}>Tap to upgrade →</Text>
+                    </>
                   )}
                 </TouchableOpacity>
                 
@@ -482,6 +499,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#27AE60',
     marginBottom: 4,
+  },
+  membershipPrice: {
+    fontSize: 12,
+    color: '#2e7d32',
+    fontWeight: '600',
+    marginTop: 6,
   },
   membershipAction: {
     fontSize: 11,

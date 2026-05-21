@@ -23,6 +23,7 @@ import {
   initializeSubscriptions,
   formatSubscriptionDisplayPrice,
   getPackageBillingPeriod,
+  getPlanLabel,
 } from '../services/subscriptionService';
 import { LEGAL } from '../core/config';
 import { useAuth } from '../contexts/AuthContext';
@@ -133,8 +134,8 @@ export default function PaywallScreen({ navigation, route }) {
   const annualSavingsPercent = useMemo(() => {
     const monthly = packages.find((p) => getPackageBillingPeriod(p) === 'month');
     const annual = packages.find((p) => getPackageBillingPeriod(p) === 'year');
-    const mp = monthly?.product?.price;
-    const ap = annual?.product?.price;
+    const mp = monthly?.storeProduct?.price ?? monthly?.product?.price;
+    const ap = annual?.storeProduct?.price ?? annual?.product?.price;
     if (typeof mp !== 'number' || typeof ap !== 'number' || mp <= 0) return null;
     const yearlyIfMonthly = mp * 12;
     if (yearlyIfMonthly <= 0) return null;
@@ -225,7 +226,7 @@ export default function PaywallScreen({ navigation, route }) {
           <View style={styles.subscriptionLegal}>
             <Text style={styles.subscriptionLegalTitle}>Selected subscription</Text>
             <Text style={styles.subscriptionLegalLine}>
-              {selectedPackage.product?.title || 'PRO'} — {getPackageTitle(selectedPackage)} —{' '}
+              My Tackle Box PRO — {getPackageTitle(selectedPackage)} —{' '}
               {getPackageDescription(selectedPackage)} —{' '}
               {formatSubscriptionDisplayPrice(selectedPackage)}
             </Text>
@@ -373,19 +374,9 @@ const PackageCard = ({ package: pkg, isSelected, onPress, annualSavingsPercent }
 // HELPER FUNCTIONS
 // ============================================================================
 
-const getPackageTitle = (pkg) => {
-  const period = getPackageBillingPeriod(pkg);
-  if (period === 'year') return 'Annual';
-  if (period === 'month') return 'Monthly';
-  return pkg.product?.title || 'PRO';
-};
+const getPackageTitle = (pkg) => getPlanLabel(pkg).title;
 
-const getPackageDescription = (pkg) => {
-  const period = getPackageBillingPeriod(pkg);
-  if (period === 'year') return 'Billed once per year';
-  if (period === 'month') return 'Billed monthly';
-  return pkg.product?.description || '';
-};
+const getPackageDescription = (pkg) => getPlanLabel(pkg).billing;
 
 // ============================================================================
 // STYLES

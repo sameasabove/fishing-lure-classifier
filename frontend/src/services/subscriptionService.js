@@ -13,10 +13,16 @@ import {
   FALLBACK_CAD,
   formatCad,
   formatSubscriptionDisplayPrice,
+  formatSubscriptionPriceSummary,
   getPackageBillingPeriod,
 } from './subscriptionPricing';
 
-export { formatSubscriptionDisplayPrice, getPackageBillingPeriod } from './subscriptionPricing';
+export {
+  formatSubscriptionDisplayPrice,
+  formatSubscriptionPriceSummary,
+  getPackageBillingPeriod,
+  getPlanLabel,
+} from './subscriptionPricing';
 
 // ============================================================================
 // CONFIGURATION
@@ -347,6 +353,69 @@ export const isUserPro = async () => {
 // ============================================================================
 
 /**
+ * Load live StoreKit products (same source as the Apple subscribe sheet).
+ * Fetches each ID separately — iOS has regressed on batched getProducts([a,b]) returning only one product.
+ */
+const fetchStoreProductsById = async () => {
+  const ids = [PRODUCT_IDS.MONTHLY, PRODUCT_IDS.YEARLY];
+  const map = {};
+
+  for (const id of ids) {
+    try {
+      const products = await Purchases.getProducts([id]);
+      const match = products?.find((p) => p.identifier === id) ?? products?.[0];
+      if (match) map[id] = match;
+    } catch (e) {
+      console.warn(`[Subscriptions] getProducts(${id}) failed:`, e?.message || e);
+    }
+  }
+
+  return map;
+};
+
+/**
+ * RevenueCat offering packages can carry stale priceString ($4.99 / $39.99) while purchase uses live StoreKit.
+ * Replace product entirely with StoreKit data for UI; keep package object for Purchases.purchasePackage().
+ */
+const enrichPackagesWithStoreProducts = async (packages) => {
+  if (!packages?.length) return packages;
+
+  const storeById = await fetchStoreProductsById();
+  if (!Object.keys(storeById).length) {
+    console.warn('[Subscriptions] No StoreKit products for display; card prices may be stale');
+    return packages;
+  }
+
+  return packages.map((pkg) => {
+    const id = pkg.product?.identifier;
+    const storeProduct = id ? storeById[id] : null;
+    if (!storeProduct) return pkg;
+
+    return {
+      ...pkg,
+      storeProduct,
+      product: storeProduct,
+    };
+  });
+};
+
+const resolveOfferingPackages = async (rawPackages, isFallback) => {
+  if (!rawPackages?.length) {
+    if (__DEV__) {
+      return { packages: getFallbackPackages(), isFallback: true };
+    }
+    return {
+      packages: [],
+      isFallback: false,
+      error: 'Subscription plans are unavailable. Check your connection and try again.',
+    };
+  }
+
+  const enriched = await enrichPackagesWithStoreProducts(rawPackages);
+  return { packages: enriched, isFallback };
+};
+
+/**
  * Get available subscription packages
  * Returns packages configured in RevenueCat dashboard
  */
@@ -375,12 +444,13 @@ export const getSubscriptionPackages = async () => {
       if (isNotConfigured) {
         if (__DEV__) {
           console.warn('[Subscriptions] RevenueCat not configured yet, returning fallback packages');
+          return { success: true, packages: getFallbackPackages(), isFallback: true };
         }
-        // Return fallback packages for testing
         return {
-          success: true,
-          packages: getFallbackPackages(),
-          isFallback: true,
+          success: false,
+          packages: [],
+          error: 'Subscriptions are not configured. Please try again later.',
+          isFallback: false,
         };
       }
       throw configError;
@@ -409,38 +479,57 @@ export const getSubscriptionPackages = async () => {
       if (__DEV__) {
         console.log('[Subscriptions] Loaded', packages.length, 'packages from RevenueCat (monthly/yearly only)');
       }
-      const resolved = packages.length > 0 ? packages : getFallbackPackages();
+      const { packages: resolved, isFallback, error } = await resolveOfferingPackages(
+        packages,
+        packages.length === 0
+      );
+      if (!resolved.length) {
+        return { success: false, packages: [], error, isFallback: false };
+      }
       return {
         success: true,
         packages: resolved,
-        isFallback: packages.length === 0,
+        isFallback,
         current: offerings.current,
       };
-    } else {
-      if (__DEV__) {
-        console.warn('[Subscriptions] No offerings found in RevenueCat, using fallback packages');
-      }
-      // Return fallback packages if RevenueCat has no offerings configured
+    }
+
+    if (__DEV__) {
+      console.warn('[Subscriptions] No offerings found in RevenueCat, using fallback packages');
+    }
+    const { packages: resolved, isFallback, error } = await resolveOfferingPackages([], true);
+    if (!resolved.length) {
+      return { success: false, packages: [], error, isFallback: false };
+    }
+    return { success: true, packages: resolved, isFallback: true };
+  } catch (error) {
+    console.error('[Subscriptions] Get packages error:', error);
+
+    if (__DEV__) {
+      console.warn('[Subscriptions] Using fallback packages due to error');
       return {
         success: true,
         packages: getFallbackPackages(),
         isFallback: true,
+        error: error.message,
       };
     }
-  } catch (error) {
-    console.error('[Subscriptions] Get packages error:', error);
-    
-    // Return fallback packages on error so user can still see options
-    if (__DEV__) {
-      console.warn('[Subscriptions] Using fallback packages due to error');
-    }
     return {
-      success: true,
-      packages: getFallbackPackages(),
-      isFallback: true,
-      error: error.message, // Include error for debugging
+      success: false,
+      packages: [],
+      error: error.message || 'Could not load subscription plans.',
+      isFallback: false,
     };
   }
+};
+
+/**
+ * Short price line for Settings / home upgrade (same StoreKit prices as paywall).
+ */
+export const getSubscriptionPriceSummary = async () => {
+  const result = await getSubscriptionPackages();
+  if (!result.success) return null;
+  return formatSubscriptionPriceSummary(result.packages);
 };
 
 /**

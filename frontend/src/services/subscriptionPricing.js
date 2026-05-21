@@ -1,8 +1,10 @@
 /**
- * Paywall price labels — must match the App Store purchase sheet (StoreKit priceString).
+ * Paywall price labels — must match the App Store purchase sheet (StoreKit).
  */
 
-/** Canada early-adoption list prices when StoreKit is unavailable (dev / misconfigured RevenueCat). */
+import { SUBSCRIPTION } from '../core/config';
+
+/** Canada early-adoption list prices when StoreKit is unavailable (dev only). */
 export const FALLBACK_CAD = {
   monthly: 6.99,
   yearly: 49.99,
@@ -14,6 +16,11 @@ export const formatCad = (amount) =>
     style: 'currency',
     currency: FALLBACK_CAD.currencyCode,
   }).format(amount);
+
+const PLAN_LABELS = {
+  month: { title: 'Monthly', billing: 'Billed monthly' },
+  year: { title: 'Annual', billing: 'Billed once per year' },
+};
 
 /**
  * Billing period for UI (/month vs /year). Prefer StoreKit ISO period, then package type & product id.
@@ -30,8 +37,8 @@ export const getPackageBillingPeriod = (pkg) => {
   if (type === 'MONTHLY' || type === 'WEEKLY') return 'month';
 
   const productId = (pkg.product?.identifier || '').toLowerCase();
-  if (productId.includes('yearly') || productId.includes('annual')) return 'year';
-  if (productId.includes('monthly') || productId.includes('month')) return 'month';
+  if (productId === SUBSCRIPTION.productIds.yearly || productId.includes('yearly')) return 'year';
+  if (productId === SUBSCRIPTION.productIds.monthly || productId.includes('monthly')) return 'month';
 
   const id = (pkg.identifier || '').toLowerCase();
   if (id.includes('annual') || id.includes('yearly')) return 'year';
@@ -40,15 +47,41 @@ export const getPackageBillingPeriod = (pkg) => {
   return null;
 };
 
+/** App-facing plan copy — never use App Store product title/description (often contain stale prices). */
+export const getPlanLabel = (pkg) => {
+  const period = getPackageBillingPeriod(pkg);
+  return PLAN_LABELS[period] || { title: 'PRO', billing: '' };
+};
+
 /**
- * Price label for paywall & App Store 3.1.2 disclosure. Uses StoreKit priceString when available.
+ * Best StoreKit-formatted price for display (matches Apple's purchase sheet).
+ */
+const pickStorePriceString = (product, period) => {
+  if (!product) return '';
+
+  if (period === 'month') {
+    return (
+      product.pricePerMonthString?.trim() ||
+      product.priceString?.trim() ||
+      ''
+    );
+  }
+  if (period === 'year') {
+    return product.priceString?.trim() || product.pricePerYearString?.trim() || '';
+  }
+  return product.priceString?.trim() || '';
+};
+
+/**
+ * Price label for paywall & App Store 3.1.2 disclosure.
  */
 export const formatSubscriptionDisplayPrice = (pkg) => {
-  const product = pkg?.product;
+  // Prefer live StoreKit product attached in getSubscriptionPackages (not stale RC offering copy)
+  const product = pkg?.storeProduct || pkg?.product;
   if (!product) return '';
 
   const period = getPackageBillingPeriod(pkg);
-  const storePrice = product.priceString?.trim();
+  const storePrice = pickStorePriceString(product, period);
 
   if (storePrice) {
     if (period === 'month' && !/\/\s*month/i.test(storePrice)) return `${storePrice}/month`;
@@ -56,6 +89,7 @@ export const formatSubscriptionDisplayPrice = (pkg) => {
     return storePrice;
   }
 
+  // Do not format stale RevenueCat numeric price — wrong card amounts vs Apple sheet
   const raw = product.price;
   const price = typeof raw === 'number' ? raw : typeof raw === 'string' ? parseFloat(raw) : NaN;
   const code = product.currencyCode;
@@ -75,4 +109,18 @@ export const formatSubscriptionDisplayPrice = (pkg) => {
   }
 
   return '';
+};
+
+/** One-line summary for Settings / upgrade teasers, e.g. "CA$6.99/month · CA$49.99/year". */
+export const formatSubscriptionPriceSummary = (packages) => {
+  if (!packages?.length) return null;
+
+  const monthly = packages.find((p) => getPackageBillingPeriod(p) === 'month');
+  const yearly = packages.find((p) => getPackageBillingPeriod(p) === 'year');
+  const parts = [];
+  const mp = monthly ? formatSubscriptionDisplayPrice(monthly) : '';
+  const yp = yearly ? formatSubscriptionDisplayPrice(yearly) : '';
+  if (mp) parts.push(mp);
+  if (yp) parts.push(yp);
+  return parts.length ? parts.join(' · ') : null;
 };
