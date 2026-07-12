@@ -28,6 +28,11 @@ export const CONFIG = {
   backend: {
     url: process.env.EXPO_PUBLIC_BACKEND_URL ?? '',
   },
+
+  // Injected into native Android config via app.config.js (Maps SDK). Not used in JS at runtime.
+  googleMaps: {
+    apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
+  },
 };
 
 // ---------------------------------------------------------------------------

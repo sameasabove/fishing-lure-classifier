@@ -28,6 +28,7 @@ beforeEach(() => {
   delete process.env.EXPO_PUBLIC_RC_IOS_PRODUCTION_KEY;
   delete process.env.EXPO_PUBLIC_RC_ANDROID_PRODUCTION_KEY;
   delete process.env.EXPO_PUBLIC_RC_TEST_KEY;
+  delete process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
 });
 
 afterAll(() => {
@@ -39,11 +40,12 @@ afterAll(() => {
 // ---------------------------------------------------------------------------
 
 describe('CONFIG shape', () => {
-  it('has supabase, revenueCat, and backend sections', () => {
+  it('has supabase, revenueCat, backend, and googleMaps sections', () => {
     const { CONFIG } = require('../index');
     expect(CONFIG).toHaveProperty('supabase');
     expect(CONFIG).toHaveProperty('revenueCat');
     expect(CONFIG).toHaveProperty('backend');
+    expect(CONFIG).toHaveProperty('googleMaps');
   });
 
   it('supabase section has url, anonKey, storageBucket', () => {
@@ -102,11 +104,17 @@ describe('defaults when env vars are missing', () => {
       CONFIG.revenueCat.androidProductionKey,
       CONFIG.revenueCat.testKey,
       CONFIG.backend.url,
+      CONFIG.googleMaps.apiKey,
     ];
     allValues.forEach((val) => {
       expect(val).not.toBeUndefined();
       expect(val).not.toBeNull();
     });
+  });
+
+  it('googleMaps.apiKey defaults to empty string', () => {
+    const { CONFIG } = require('../index');
+    expect(CONFIG.googleMaps.apiKey).toBe('');
   });
 });
 
@@ -143,6 +151,12 @@ describe('reads from environment variables', () => {
     process.env.EXPO_PUBLIC_RC_ANDROID_PRODUCTION_KEY = 'goog_android_prod_key';
     const { CONFIG } = require('../index');
     expect(CONFIG.revenueCat.androidProductionKey).toBe('goog_android_prod_key');
+  });
+
+  it('reads EXPO_PUBLIC_GOOGLE_MAPS_API_KEY', () => {
+    process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY = 'AIzaSyTestMapsKey';
+    const { CONFIG } = require('../index');
+    expect(CONFIG.googleMaps.apiKey).toBe('AIzaSyTestMapsKey');
   });
 
   it('reads EXPO_PUBLIC_RC_TEST_KEY', () => {
