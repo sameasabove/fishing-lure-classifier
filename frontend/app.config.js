@@ -12,11 +12,15 @@ module.exports = () => {
       ...expo,
       android: {
         ...expo.android,
-        versionCode: 10,
+        versionCode: 11,
         config: {
           ...(expo.android.config || {}),
           googleMaps: {
-            apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
+            // Prefer Sensitive/Plain EAS env — Secret visibility often fails for app.config.js
+            apiKey:
+              process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ||
+              process.env.GOOGLE_MAPS_API_KEY ||
+              '',
           },
         },
       },
