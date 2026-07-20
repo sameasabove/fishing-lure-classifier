@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fishinglure.analyzer",
-      "buildNumber": "22",
+      "buildNumber": "23",
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs access to camera to take photos of fishing lures for analysis.",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,31 +12,18 @@ import {
   Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { classifyAuthError } from '../services/authErrors';
 import { resendConfirmationEmail } from '../services/supabaseService';
-import {
-  isAppleSignInAvailable,
-  isGoogleSignInConfigured,
-} from '../services/socialAuthService';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState(null); // 'apple' | 'google' | null
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState('');
-  const [appleAvailable, setAppleAvailable] = useState(false);
   const [resendInfo, setResendInfo] = useState('');
-  const { signIn, signInWithApple, signInWithGoogle } = useAuth();
-  const googleConfigured = isGoogleSignInConfigured();
-
-  useEffect(() => {
-    isAppleSignInAvailable().then(setAppleAvailable);
-  }, []);
+  const { signIn } = useAuth();
 
   const showError = (error) => {
     const { code, message } = classifyAuthError(error);
@@ -84,38 +71,6 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  const handleApple = async () => {
-    setErrorMessage('');
-    setErrorCode('');
-    setSocialLoading('apple');
-    try {
-      await signInWithApple();
-    } catch (error) {
-      if (classifyAuthError(error).code !== 'cancelled') {
-        showError(error);
-      }
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
-  const handleGoogle = async () => {
-    setErrorMessage('');
-    setErrorCode('');
-    setSocialLoading('google');
-    try {
-      await signInWithGoogle();
-    } catch (error) {
-      if (classifyAuthError(error).code !== 'cancelled') {
-        showError(error);
-      }
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
-  const busy = isLoading || !!socialLoading;
-
   return (
     <LinearGradient colors={['#e8f5e9', '#c8e6c9', '#a5d6a7']} style={styles.container}>
       <KeyboardAvoidingView
@@ -160,43 +115,6 @@ export default function LoginScreen({ navigation }) {
               </View>
             ) : null}
 
-            {(appleAvailable || googleConfigured) && (
-              <View style={styles.socialBlock}>
-                {appleAvailable ? (
-                  <AppleAuthentication.AppleAuthenticationButton
-                    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                    buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                    cornerRadius={10}
-                    style={styles.appleButton}
-                    onPress={handleApple}
-                  />
-                ) : null}
-
-                {googleConfigured ? (
-                  <TouchableOpacity
-                    style={[styles.googleButton, busy && styles.buttonDisabled]}
-                    onPress={handleGoogle}
-                    disabled={busy}
-                  >
-                    {socialLoading === 'google' ? (
-                      <ActivityIndicator color="#333" />
-                    ) : (
-                      <>
-                        <Ionicons name="logo-google" size={20} color="#4285F4" style={styles.googleIcon} />
-                        <Text style={styles.googleText}>Continue with Google</Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                ) : null}
-
-                <View style={styles.dividerRow}>
-                  <View style={styles.dividerLine} />
-                  <Text style={styles.dividerText}>or use email</Text>
-                  <View style={styles.dividerLine} />
-                </View>
-              </View>
-            )}
-
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
               <TextInput
@@ -212,7 +130,7 @@ export default function LoginScreen({ navigation }) {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
-                editable={!busy}
+                editable={!isLoading}
               />
             </View>
 
@@ -230,17 +148,17 @@ export default function LoginScreen({ navigation }) {
                 placeholderTextColor="#9e9e9e"
                 secureTextEntry
                 autoCapitalize="none"
-                editable={!busy}
+                editable={!isLoading}
               />
             </View>
 
             <TouchableOpacity
-              style={[styles.button, busy && styles.buttonDisabled]}
+              style={[styles.button, isLoading && styles.buttonDisabled]}
               onPress={handleLogin}
-              disabled={busy}
+              disabled={isLoading}
             >
               <LinearGradient
-                colors={busy ? ['#bdc3c7', '#95a5a6'] : ['#2e7d32', '#388e3c']}
+                colors={isLoading ? ['#bdc3c7', '#95a5a6'] : ['#2e7d32', '#388e3c']}
                 style={styles.buttonGradient}
               >
                 {isLoading ? (
@@ -309,24 +227,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  socialBlock: { marginBottom: 8 },
-  appleButton: { width: '100%', height: 48, marginBottom: 12 },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: '#dadce0',
-    backgroundColor: '#fff',
-    marginBottom: 16,
-  },
-  googleIcon: { marginRight: 10 },
-  googleText: { fontSize: 16, fontWeight: '600', color: '#3c4043' },
-  dividerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#e0e0e0' },
-  dividerText: { marginHorizontal: 10, fontSize: 13, color: '#888' },
   errorContainer: {
     backgroundColor: '#ffebee',
     padding: 12,
