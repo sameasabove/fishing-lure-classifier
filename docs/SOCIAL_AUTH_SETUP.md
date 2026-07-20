@@ -45,6 +45,8 @@ Add the same names in EAS → Environment variables (production), visibility **S
 
 Until `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` is set, the Google button is hidden. Apple button shows on real iOS devices when available.
 
+**iOS builds:** native Google Sign-In is only linked when `EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME` is set in EAS. Without it, the module is skipped so CocoaPods can succeed (email + Apple still work). After adding the scheme, rebuild.
+
 ## 5. Email deliverability (less junk)
 
 1. Paste updated HTML from `docs/supabase/email-templates/` into Supabase Email templates

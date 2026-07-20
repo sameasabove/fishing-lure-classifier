@@ -9,13 +9,15 @@ module.exports = () => {
 
   plugins.push('expo-apple-authentication');
 
-  const googlePlugin = ['@react-native-google-signin/google-signin'];
-  if (process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME) {
-    googlePlugin.push({
-      iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
-    });
+  // Only link Google Sign-In when iOS URL scheme is set (EAS / .env).
+  // Without it, CocoaPods fails on AppCheckCore modular headers.
+  const iosUrlScheme = process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME;
+  if (iosUrlScheme) {
+    plugins.push([
+      '@react-native-google-signin/google-signin',
+      { iosUrlScheme },
+    ]);
   }
-  plugins.push(googlePlugin);
 
   return {
     expo: {

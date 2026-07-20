@@ -4,11 +4,16 @@
 import { Platform } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { supabase } from '../config/supabase';
 import { CONFIG } from '../core/config';
 
 let googleConfigured = false;
+
+const getGoogleSignin = () => {
+  // Lazy require — native module is omitted from builds until Google OAuth is configured.
+  // eslint-disable-next-line global-require
+  return require('@react-native-google-signin/google-signin').GoogleSignin;
+};
 
 const ensureGoogleConfigured = () => {
   if (googleConfigured) return;
@@ -19,7 +24,7 @@ const ensureGoogleConfigured = () => {
       'Google Sign-In is not configured. Set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID in .env / EAS.'
     );
   }
-  GoogleSignin.configure({
+  getGoogleSignin().configure({
     webClientId,
     iosClientId: iosClientId || undefined,
     offlineAccess: false,
@@ -91,6 +96,7 @@ export const signInWithApple = async () => {
  */
 export const signInWithGoogle = async () => {
   ensureGoogleConfigured();
+  const GoogleSignin = getGoogleSignin();
 
   if (Platform.OS === 'android') {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
