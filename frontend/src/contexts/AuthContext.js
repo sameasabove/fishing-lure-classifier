@@ -93,24 +93,11 @@ export const AuthProvider = ({ children }) => {
     user,
     session,
     loading,
-    signIn: async (email, password) => {
-      setLoading(true);
-      try {
-        const result = await signIn(email, password);
-        return result;
-      } finally {
-        setLoading(false);
-      }
-    },
-    signUp: async (email, password, fullName) => {
-      setLoading(true);
-      try {
-        const result = await signUp(email, password, fullName);
-        return result;
-      } finally {
-        setLoading(false);
-      }
-    },
+    // Do not toggle global `loading` on sign-in/sign-up — App.js replaces the
+    // auth stack with a spinner when loading, which unmounts Login/Signup and
+    // wipes email, password, and error messages on failed attempts.
+    signIn: async (email, password) => signIn(email, password),
+    signUp: async (email, password, fullName) => signUp(email, password, fullName),
     signOut: async () => {
       setLoading(true);
       try {

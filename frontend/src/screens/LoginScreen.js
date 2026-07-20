@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../contexts/AuthContext';
+import { formatAuthError } from '../services/authErrors';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -23,9 +24,8 @@ export default function LoginScreen({ navigation }) {
   const { signIn } = useAuth();
 
   const handleLogin = async () => {
-    // Clear previous error
     setErrorMessage('');
-    
+
     if (!email || !password) {
       setErrorMessage('Please enter both email and password');
       return;
@@ -33,19 +33,12 @@ export default function LoginScreen({ navigation }) {
 
     setIsLoading(true);
     try {
-      await signIn(email, password);
-      // Navigation will happen automatically via AuthContext
-      // Only clear fields on successful login
-      setEmail('');
+      await signIn(email.trim(), password);
+      // Success: AuthContext navigates away; clear sensitive field only
       setPassword('');
     } catch (error) {
-      // Keep email and password, just show error
-      const msg = error.message || '';
-      if (msg.includes('Invalid login credentials')) {
-        setErrorMessage("That's not the password we have on file. Double-check your email and password, or use Forgot password to set a new one.");
-      } else {
-        setErrorMessage(msg || 'Login failed. Please check your credentials.');
-      }
+      // Keep email and password so the user can correct a typo
+      setErrorMessage(formatAuthError(error, 'Login failed. Please check your credentials.'));
     } finally {
       setIsLoading(false);
     }

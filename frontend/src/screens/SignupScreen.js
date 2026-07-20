@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../contexts/AuthContext';
+import { formatAuthError } from '../services/authErrors';
 
 export default function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -27,10 +28,8 @@ export default function SignupScreen({ navigation }) {
   const clearError = () => setErrorMessage('');
 
   const handleSignup = async () => {
-    // Clear previous error
     setErrorMessage('');
-    
-    // Validation
+
     if (!fullName || !email || !password || !confirmPassword) {
       setErrorMessage('Please fill in all fields');
       return;
@@ -48,20 +47,19 @@ export default function SignupScreen({ navigation }) {
 
     setIsLoading(true);
     try {
-      await signUp(email, password, fullName);
+      await signUp(email.trim(), password, fullName.trim());
       Alert.alert(
         'Success!',
         'Account created successfully! Please check your email to verify your account.',
         [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
       );
-      // Only clear fields on successful signup
       setFullName('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
     } catch (error) {
-      // Keep all fields, just show error
-      setErrorMessage(error.message || 'Signup failed. Please try again.');
+      // Keep all fields so the user can fix and retry
+      setErrorMessage(formatAuthError(error, 'Signup failed. Please try again.'));
     } finally {
       setIsLoading(false);
     }
