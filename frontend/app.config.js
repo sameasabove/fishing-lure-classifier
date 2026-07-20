@@ -39,6 +39,15 @@ module.exports = () => {
         },
       },
       plugins,
+      // Expo module autolinking still pulls GoogleSignIn pods unless excluded
+      // (react-native.config.js alone is not enough).
+      ...(iosUrlScheme
+        ? {}
+        : {
+            autolinking: {
+              exclude: ['@react-native-google-signin/google-signin'],
+            },
+          }),
     },
   };
 };

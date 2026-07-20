@@ -64,5 +64,10 @@
     "babel-preset-expo": "^55.0.16",
     "jest-expo": "^55.0.15"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "autolinking": {
+      "exclude": ["@react-native-google-signin/google-signin"]
+    }
+  }
 }
