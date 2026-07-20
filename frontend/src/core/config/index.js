@@ -33,6 +33,12 @@ export const CONFIG = {
   googleMaps: {
     apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
   },
+
+  // Google Sign-In (OAuth client IDs from Google Cloud Console)
+  googleAuth: {
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
+  },
 };
 
 // ---------------------------------------------------------------------------

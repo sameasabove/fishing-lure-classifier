@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
   ScrollView,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -48,11 +47,7 @@ export default function SignupScreen({ navigation }) {
     setIsLoading(true);
     try {
       await signUp(email.trim(), password, fullName.trim());
-      Alert.alert(
-        'Success!',
-        'Account created successfully! Please check your email to verify your account.',
-        [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
-      );
+      navigation.navigate('CheckEmail', { email: email.trim() });
       setFullName('');
       setEmail('');
       setPassword('');

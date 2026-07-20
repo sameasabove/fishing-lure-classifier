@@ -1,4 +1,4 @@
-import { formatAuthError } from '../authErrors';
+import { formatAuthError, classifyAuthError } from '../authErrors';
 
 describe('formatAuthError', () => {
   it('maps invalid credentials', () => {
@@ -20,5 +20,17 @@ describe('formatAuthError', () => {
   it('falls back to message or default', () => {
     expect(formatAuthError({ message: 'Weird custom error' })).toBe('Weird custom error');
     expect(formatAuthError({})).toMatch(/something went wrong/i);
+  });
+});
+
+describe('classifyAuthError', () => {
+  it('returns invalid_credentials code', () => {
+    expect(classifyAuthError({ message: 'Invalid login credentials' }).code).toBe(
+      'invalid_credentials'
+    );
+  });
+
+  it('returns email_not_confirmed code', () => {
+    expect(classifyAuthError({ message: 'Email not confirmed' }).code).toBe('email_not_confirmed');
   });
 });

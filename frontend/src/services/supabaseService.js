@@ -56,6 +56,28 @@ export const signIn = async (email, password) => {
 };
 
 /**
+ * Resend signup confirmation email (user must confirm before signing in).
+ */
+export const resendConfirmationEmail = async (email) => {
+  try {
+    const options = {};
+    if (AUTH.emailConfirmRedirectUrl) {
+      options.emailRedirectTo = AUTH.emailConfirmRedirectUrl;
+    }
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim(),
+      options,
+    });
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    console.error('[Supabase] Resend confirmation error:', error);
+    throw new Error(error.message || 'Failed to resend confirmation email');
+  }
+};
+
+/**
  * Sign out user
  */
 export const signOut = async () => {
@@ -688,6 +710,7 @@ export default {
   getCurrentUser,
   getCurrentSession,
   resetPassword,
+  resendConfirmationEmail,
   
   // Profile
   getUserProfile,

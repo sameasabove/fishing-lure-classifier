@@ -19,6 +19,7 @@ import LureDetailScreen from './src/screens/LureDetailScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import SignupScreen from './src/screens/SignupScreen';
+import CheckEmailScreen from './src/screens/CheckEmailScreen';
 import PaywallScreen from './src/screens/PaywallScreen';
 import SubscriptionTestScreen from './src/screens/SubscriptionTestScreen';
 
@@ -110,6 +111,7 @@ function AuthStackScreen() {
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Signup" component={SignupScreen} />
+      <AuthStack.Screen name="CheckEmail" component={CheckEmailScreen} />
       <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </AuthStack.Navigator>
   );

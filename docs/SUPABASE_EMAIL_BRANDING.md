@@ -4,13 +4,14 @@ Confirmation, password reset, and other auth emails are configured in the **Supa
 
 ## Quick checklist
 
-- [ ] Paste branded HTML into **Confirm signup** (and optionally **Reset password**) templates
+- [ ] Paste branded HTML into **Confirm signup** (and **Reset password**) from `docs/supabase/email-templates/`
 - [ ] Set subject lines from `docs/supabase/email-templates/subjects.txt`
 - [ ] Set **Sender name** to `My Tackle Box` (Authentication → Emails → SMTP / sender settings)
 - [ ] Host `backend/confirm-email-success.html` on GitHub Pages (same site as password reset)
 - [ ] Add confirm URL to **Redirect URLs** in Supabase
 - [ ] Set `EXPO_PUBLIC_EMAIL_CONFIRM_REDIRECT_URL` in EAS / `.env`
-- [ ] (Optional) Custom SMTP so emails come from `noreply@yourdomain.com` instead of `noreply@mail.app.supabase.io`
+- [ ] (Strongly recommended) Custom SMTP so emails come from your domain instead of `noreply@mail.app.supabase.io` — this is the main fix for spam/junk
+- [ ] Social login: see `docs/SOCIAL_AUTH_SETUP.md` (Apple + Google)
 
 ---
 

@@ -5,6 +5,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '../config/supabase';
 import { getCurrentUser, signIn, signUp, signOut } from '../services/supabaseService';
+import { signInWithApple, signInWithGoogle } from '../services/socialAuthService';
 import { initializeSubscriptions } from '../services/subscriptionService';
 
 const AuthContext = createContext({});
@@ -98,6 +99,8 @@ export const AuthProvider = ({ children }) => {
     // wipes email, password, and error messages on failed attempts.
     signIn: async (email, password) => signIn(email, password),
     signUp: async (email, password, fullName) => signUp(email, password, fullName),
+    signInWithApple: async () => signInWithApple(),
+    signInWithGoogle: async () => signInWithGoogle(),
     signOut: async () => {
       setLoading(true);
       try {

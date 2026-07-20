@@ -1,22 +1,34 @@
 /**
- * Expo config — extends app.json and injects Android Google Maps key from env.
- * Set EXPO_PUBLIC_GOOGLE_MAPS_API_KEY in frontend/.env (local) and EAS Secrets (builds).
+ * Expo config — extends app.json and injects native keys from env.
  */
 const appJson = require('./app.json');
 
 module.exports = () => {
   const expo = appJson.expo;
+  const plugins = [...(expo.plugins || [])];
+
+  plugins.push('expo-apple-authentication');
+
+  const googlePlugin = ['@react-native-google-signin/google-signin'];
+  if (process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME) {
+    googlePlugin.push({
+      iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
+    });
+  }
+  plugins.push(googlePlugin);
 
   return {
     expo: {
       ...expo,
+      ios: {
+        ...expo.ios,
+        usesAppleSignIn: true,
+      },
       android: {
         ...expo.android,
-        versionCode: 11,
         config: {
           ...(expo.android.config || {}),
           googleMaps: {
-            // Prefer Sensitive/Plain EAS env — Secret visibility often fails for app.config.js
             apiKey:
               process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ||
               process.env.GOOGLE_MAPS_API_KEY ||
@@ -24,6 +36,7 @@ module.exports = () => {
           },
         },
       },
+      plugins,
     },
   };
 };
