@@ -58,13 +58,12 @@
     <div id="invalidStep" class="hidden">
       <p class="emoji">🎣</p>
       <h1>Link expired or invalid</h1>
-      <p>This confirmation link may have expired. In the app, try signing up again or request a new confirmation email from Supabase support settings.</p>
+      <p id="invalidDetail">This confirmation link may have expired. Open the app and sign up again, or request a new confirmation email.</p>
       <p class="hint">Open the link in Safari or Chrome, not your email app's in-app browser.</p>
     </div>
   </div>
   <script>
     (function () {
-      // Replace with your project values, or host via the same GitHub Pages setup as password-reset-success.html
       var SUPABASE_URL = 'https://wisqqrerjbfbdiorlxtn.supabase.co';
       var SUPABASE_ANON =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indpc3FxcmVyamJmYmRpb3JseHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2Mjc1NzEsImV4cCI6MjA3NjIwMzU3MX0.Wq0SYq1KafI_lputqfTjKzf6ruCMK9v0LoOlo6KqYxo';
@@ -74,7 +73,9 @@
         var params = {};
         str.replace(/^[#?]/, '').split('&').forEach(function (p) {
           var kv = p.split('=');
-          if (kv[0] && kv[1]) params[kv[0]] = decodeURIComponent(kv[1].replace(/\+/g, ' '));
+          if (kv[0] && kv[1] !== undefined) {
+            params[kv[0]] = decodeURIComponent(kv[1].replace(/\+/g, ' '));
+          }
         });
         return params;
       }
@@ -91,6 +92,7 @@
       var loading = document.getElementById('loadingStep');
       var success = document.getElementById('successStep');
       var invalid = document.getElementById('invalidStep');
+      var invalidDetail = document.getElementById('invalidDetail');
 
       function showSuccess() {
         loading.classList.add('hidden');
@@ -99,10 +101,28 @@
         window.history.replaceState(null, '', window.location.pathname);
       }
 
-      function showInvalid() {
+      function showInvalid(message) {
         loading.classList.add('hidden');
         success.classList.add('hidden');
+        if (message) invalidDetail.textContent = message;
         invalid.classList.remove('hidden');
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+
+      var authError = params.error || params.error_code;
+      if (authError) {
+        var errCode = (params.error_code || params.error || '').toLowerCase();
+        var desc = (params.error_description || '').toLowerCase();
+        if (errCode.indexOf('otp_expired') !== -1 || desc.indexOf('expired') !== -1) {
+          showInvalid(
+            'This email link has expired. Open My Tackle Box and sign up again, or request a new confirmation email.'
+          );
+        } else {
+          showInvalid(
+            'This email link is invalid or was already used. Open the app and try signing in, or create your account again.'
+          );
+        }
+        return;
       }
 
       var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -111,7 +131,9 @@
         supabase.auth
           .exchangeCodeForSession(code)
           .then(showSuccess)
-          .catch(showInvalid);
+          .catch(function () {
+            showInvalid();
+          });
         return;
       }
 
@@ -119,7 +141,9 @@
         supabase.auth
           .setSession({ access_token: accessToken, refresh_token: refreshToken })
           .then(showSuccess)
-          .catch(showInvalid);
+          .catch(function () {
+            showInvalid();
+          });
         return;
       }
 

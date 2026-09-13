@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Tackle Box</title>
+  <meta name="description" content="My Tackle Box — AI fishing lure identification and catch tracking." />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 45%, #a5d6a7 100%);
+      margin: 0;
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1b5e20;
+    }
+    .box {
+      background: #fff;
+      padding: 36px 28px 28px;
+      border-radius: 14px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 8px 28px rgba(27, 94, 32, 0.12);
+      text-align: center;
+    }
+    .emoji { font-size: 48px; margin: 0 0 8px; line-height: 1; }
+    h1 { color: #1b5e20; font-size: 1.4rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+    .tagline { color: #558b2f; font-size: 14px; margin: 0 0 20px; }
+    p { color: #333; line-height: 1.55; margin: 0 0 14px; font-size: 15px; }
+    .banner {
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+    .banner.ok { background: #e8f5e9; color: #1b5e20; }
+    .banner.warn { background: #fff8e1; color: #5d4037; }
+    .hint { font-size: 13px; color: #666; margin-bottom: 0; }
+    .hidden { display: none; }
+    .pricing {
+      text-align: left;
+      margin: 8px 0 20px;
+      padding: 0;
+      list-style: none;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .pricing li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #333;
+      border-bottom: 1px solid #eee;
+    }
+    .pricing li:last-child { border-bottom: none; }
+    .pricing strong { color: #1b5e20; }
+    .links { margin: 18px 0 8px; font-size: 13px; }
+    .links a { color: #2e7d32; margin: 0 8px; }
+    .footer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+    .footer a { color: #2e7d32; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div id="loadingStep" class="hidden">
+      <p class="emoji">🎣</p>
+      <h1>My Tackle Box</h1>
+      <p>Confirming your email…</p>
+    </div>
+
+    <div id="successStep" class="hidden">
+      <p class="emoji">🎣</p>
+      <h1>You're all set!</h1>
+      <p class="banner ok">Your email is confirmed.</p>
+      <p>Open the <strong>My Tackle Box</strong> app and sign in with your email and password.</p>
+      <p class="hint">You can close this page.</p>
+    </div>
+
+    <div id="errorStep" class="hidden">
+      <p class="emoji">🎣</p>
+      <h1>Link expired or invalid</h1>
+      <p class="banner warn" id="errorDetail">
+        This confirmation link is no longer valid. Open the app and sign up again, or request a new confirmation email.
+      </p>
+      <p class="hint">Open confirmation links in Safari or Chrome — not your email app’s built-in browser.</p>
+    </div>
+
+    <div id="landingStep" class="hidden">
+      <p class="emoji">🎣</p>
+      <h1>My Tackle Box</h1>
+      <p class="tagline">AI lure ID &amp; catch tracking</p>
+      <p>Photograph a lure, get an ID and fishing tips, and keep your catches in one place.</p>
+      <ul class="pricing">
+        <li><span>Free</span><strong>CA$0 · 10 scans / month</strong></li>
+        <li><span>PRO monthly</span><strong>CA$6.99 / month</strong></li>
+        <li><span>PRO yearly</span><strong>CA$49.99 / year</strong></li>
+      </ul>
+      <p class="hint">Prices shown for Canada. Tax may apply. Early-adoption PRO pricing for our first wave of users.</p>
+      <div class="links">
+        <a href="backend/PRIVACY_POLICY.html">Privacy</a>
+        <a href="backend/TERMS_OF_SERVICE.html">Terms</a>
+      </div>
+      <div class="footer">
+        Support:
+        <a href="mailto:mytackleboxapp@gmail.com">mytackleboxapp@gmail.com</a><br />
+        © My Tackle Box. All rights reserved.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var SUPABASE_URL = 'https://wisqqrerjbfbdiorlxtn.supabase.co';
+      var SUPABASE_ANON =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indpc3FxcmVyamJmYmRpb3JseHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2Mjc1NzEsImV4cCI6MjA3NjIwMzU3MX0.Wq0SYq1KafI_lputqfTjKzf6ruCMK9v0LoOlo6KqYxo';
+
+      function parseParams(str) {
+        if (!str) return {};
+        var params = {};
+        str.replace(/^[#?]/, '').split('&').forEach(function (p) {
+          var kv = p.split('=');
+          if (kv[0] && kv[1] !== undefined) {
+            params[kv[0]] = decodeURIComponent(kv[1].replace(/\+/g, ' '));
+          }
+        });
+        return params;
+      }
+
+      var params = Object.assign(
+        {},
+        parseParams(window.location.search),
+        parseParams(window.location.hash)
+      );
+
+      var loading = document.getElementById('loadingStep');
+      var success = document.getElementById('successStep');
+      var errorStep = document.getElementById('errorStep');
+      var landing = document.getElementById('landingStep');
+      var errorDetail = document.getElementById('errorDetail');
+
+      function show(el) {
+        [loading, success, errorStep, landing].forEach(function (node) {
+          node.classList.add('hidden');
+        });
+        el.classList.remove('hidden');
+      }
+
+      function clearUrlNoise() {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+
+      function showError(message) {
+        if (message) errorDetail.textContent = message;
+        show(errorStep);
+        clearUrlNoise();
+      }
+
+      function showSuccess() {
+        show(success);
+        clearUrlNoise();
+      }
+
+      var authError = params.error || params.error_code;
+      if (authError) {
+        var code = (params.error_code || params.error || '').toLowerCase();
+        var desc = params.error_description || '';
+        if (code.indexOf('otp_expired') !== -1 || desc.toLowerCase().indexOf('expired') !== -1) {
+          showError(
+            'This email link has expired. Open My Tackle Box and sign up again, or use “Resend confirmation” if available.'
+          );
+        } else if (code.indexOf('access_denied') !== -1) {
+          showError(
+            'This email link is invalid or was already used. Open the app and try signing in, or create your account again.'
+          );
+        } else {
+          showError(desc || 'Something went wrong confirming your email. Please try again from the app.');
+        }
+        return;
+      }
+
+      var code = params.code;
+      var accessToken = params.access_token;
+      var refreshToken = params.refresh_token;
+      var type = (params.type || '').toLowerCase();
+
+      if (code || (accessToken && refreshToken)) {
+        show(loading);
+        var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+        if (code) {
+          client.auth.exchangeCodeForSession(code).then(showSuccess).catch(function () {
+            showError('We couldn’t confirm this link. It may have expired — try again from the app.');
+          });
+          return;
+        }
+
+        client.auth
+          .setSession({ access_token: accessToken, refresh_token: refreshToken })
+          .then(showSuccess)
+          .catch(function () {
+            showError('We couldn’t confirm this link. It may have expired — try again from the app.');
+          });
+        return;
+      }
+
+      // Site URL / support landing (no auth params)
+      if (type === 'signup' || type === 'email') {
+        showError('This confirmation link is incomplete or expired. Please request a new one from the app.');
+        return;
+      }
+
+      show(landing);
+    })();
+  </script>
+</body>
+</html>

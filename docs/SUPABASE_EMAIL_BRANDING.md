@@ -71,14 +71,17 @@ Deploy next to `password-reset-success.html` on GitHub Pages, e.g.:
 
 | Field | Example |
 |-------|---------|
-| Site URL | `https://YOUR_USER.github.io/fishing-lure-classifier/` |
-| Redirect URLs | Add your confirm page URL (and existing password reset URL) |
+| Site URL | `https://sameasabove.github.io/fishing-lure-classifier/` |
+| Redirect URLs | Confirm + password-reset pages (see below) |
+
+**Important:** Expired/invalid confirm links redirect to **Site URL** with `?error=…&error_code=otp_expired`. Repo-root `index.html` is the branded page for that case (and for App Store support URL). Do not rely on the README — GitHub Pages will serve `index.html` once it is on the Pages branch (usually `main`).
 
 Example redirect allowlist entries:
 
 ```
-https://YOUR_USER.github.io/fishing-lure-classifier/confirm-email-success.html
-https://YOUR_USER.github.io/fishing-lure-classifier/password-reset-success.html
+https://sameasabove.github.io/fishing-lure-classifier/
+https://sameasabove.github.io/fishing-lure-classifier/backend/confirm-email-success.html
+https://sameasabove.github.io/fishing-lure-classifier/backend/password-reset-success.html
 ```
 
 ### App environment variable
