@@ -127,18 +127,17 @@ const REVENUECAT_API_KEY_ANDROID = 'your-android-key';
 
 ---
 
-## 📊 Pricing Model
+## 📊 Pricing Model (Canada)
 
 | Tier | Price | Features |
 |------|-------|----------|
-| **Free** | $0 | 10 scans/month, basic features |
+| **Free** | CA$0 | 10 scans/month, basic features |
 | **PRO Monthly** | CA$6.99/mo | Unlimited scans, catches, advanced features |
 | **PRO Yearly** | CA$49.99/yr | Save ~40%, all PRO features |
 
-*Current PRO prices are early adoption pricing and stay for our first wave of users.*
+*Current PRO prices are early adoption pricing and stay for our first wave of users. Tax may apply.*
 
-**Cost per scan:** ~$0.001 (GPT-4o-mini)
-**Profit margin:** ~90% on PRO subscriptions
+**Public site:** repo-root `index.html` is the GitHub Pages landing / auth fallback (not this README).
 
 ---
 
@@ -332,13 +331,13 @@ FROM user_subscriptions;
 
 ## 📄 License
 
-[Your License Here]
+Proprietary. © My Tackle Box. All rights reserved.
 
 ---
 
 ## 🤝 Contributing
 
-[Your contribution guidelines]
+This is a private product repo. Bug reports and feedback: [mytackleboxapp@gmail.com](mailto:mytackleboxapp@gmail.com).
 
 ---
 
