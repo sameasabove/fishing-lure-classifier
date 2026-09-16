@@ -19,6 +19,13 @@ module.exports = () => {
     ]);
   }
 
+  // Always exclude unused media-library. Exclude Google until OAuth scheme is set.
+  // Put both here so package.json / app.config do not overwrite each other.
+  const exclude = ['expo-media-library'];
+  if (!iosUrlScheme) {
+    exclude.push('@react-native-google-signin/google-signin');
+  }
+
   return {
     expo: {
       ...expo,
@@ -39,15 +46,7 @@ module.exports = () => {
         },
       },
       plugins,
-      // Expo module autolinking still pulls GoogleSignIn pods unless excluded
-      // (react-native.config.js alone is not enough).
-      ...(iosUrlScheme
-        ? {}
-        : {
-            autolinking: {
-              exclude: ['@react-native-google-signin/google-signin'],
-            },
-          }),
+      autolinking: { exclude },
     },
   };
 };
