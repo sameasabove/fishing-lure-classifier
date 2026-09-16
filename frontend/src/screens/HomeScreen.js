@@ -122,19 +122,9 @@ export default function HomeScreen() {
     }
   };
 
-  const requestPermissions = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Sorry, we need camera roll permissions to make this work!');
-      return false;
-    }
-    return true;
-  };
-
+  // Android 13+: use the system photo picker only — do not request
+  // READ_MEDIA_IMAGES / READ_MEDIA_VIDEO (Play Photo and Video Permissions policy).
   const pickImage = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

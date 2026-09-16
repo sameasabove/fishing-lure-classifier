@@ -1,7 +1,10 @@
 # Social auth setup (Apple + Google) — My Tackle Box
 
-Native Sign in with Apple and Continue with Google use Supabase `signInWithIdToken`.
-Email/password still works.
+Native **Continue with Apple** and **Continue with Google** use Supabase `signInWithIdToken`.
+Same buttons work for **new accounts and returning users** (modern one-tap auth — no separate signup,
+no confirmation email for social). Email/password still works (with Autofill on Login & Signup).
+
+App version **1.0.3** unlocks editing the App Store **Description** (fix CAD prices to **CA$6.99/mo** and **CA$49.99/yr** — see `docs/APP_STORE_DESCRIPTION_CLEAN.md`). You can also set **Promotional Text** anytime without a new build.
 
 ## 1. Supabase Dashboard
 
@@ -45,10 +48,14 @@ Add the same names in EAS → Environment variables (production), visibility **S
 
 Until `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` is set, the Google button is hidden. Apple button shows on real iOS devices when available.
 
-**iOS builds:** native Google Sign-In is excluded from Expo/RN autolinking until OAuth is ready (`package.json` → `expo.autolinking.exclude`, plus `react-native.config.js`). Email + Apple still work. When enabling Google: set the EAS env vars, remove the package from `expo.autolinking.exclude`, then rebuild.
+**Native linking:** Google Sign-In is linked only when `EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME` is present at build time (`app.config.js` + `react-native.config.js`). Without it, CocoaPods skips Google and the iOS build still succeeds (email + Apple). Set the EAS secrets **before** the production EAS build so Google is included in the binary.
 
 ## 5. Email deliverability (less junk)
 
 1. Paste updated HTML from `docs/supabase/email-templates/` into Supabase Email templates
 2. Prefer **custom SMTP** (Resend/SendGrid) with SPF/DKIM — see `docs/SUPABASE_EMAIL_BRANDING.md`
 3. Sender name: **My Tackle Box**
+
+## 6. Password Autofill branding note
+
+Login/Signup now use proper Autofill attributes and the Expo display name is **My Tackle Box**. If Keychain still labels an old credential as `sameasabove`, that is from the `sameasabove.github.io` host used for confirm/reset pages. Delete the old saved password and save again, or later move auth pages to a custom domain with Associated Domains (`webcredentials`).

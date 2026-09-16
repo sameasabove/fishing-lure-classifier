@@ -4,6 +4,8 @@ const {
   formatSubscriptionPriceSummary,
   getCanonicalPriceAmount,
   getPlanLabel,
+  getBaseSubscriptionProductId,
+  matchesSubscriptionProductId,
 } = require('../subscriptionPricing');
 
 describe('subscription display pricing', () => {
@@ -41,6 +43,61 @@ describe('subscription display pricing', () => {
         product: { identifier: 'yearly_pro', subscriptionPeriod: null },
       })
     ).toBe('year');
+  });
+
+  it('normalizes modern Google Play base-plan product identifiers', () => {
+    expect(
+      getBaseSubscriptionProductId('monthly_pro:monthly-autorenewing')
+    ).toBe('monthly_pro');
+    expect(
+      getBaseSubscriptionProductId('yearly_pro:yearly-autorenewing-v2')
+    ).toBe('yearly_pro');
+    expect(getBaseSubscriptionProductId('monthly_pro')).toBe('monthly_pro');
+    expect(getBaseSubscriptionProductId(null)).toBe('');
+  });
+
+  it('matches both Apple and Google Play identifiers to the app product ID', () => {
+    expect(matchesSubscriptionProductId('monthly_pro', 'monthly_pro')).toBe(true);
+    expect(
+      matchesSubscriptionProductId(
+        'monthly_pro:monthly-autorenewing',
+        'monthly_pro'
+      )
+    ).toBe(true);
+    expect(
+      matchesSubscriptionProductId(
+        'yearly_pro:yearly-autorenewing-v2',
+        'yearly_pro'
+      )
+    ).toBe(true);
+    expect(
+      matchesSubscriptionProductId(
+        'yearly_pro:yearly-autorenewing-v2',
+        'monthly_pro'
+      )
+    ).toBe(false);
+  });
+
+  it('formats Google Play base-plan packages', () => {
+    const androidMonthly = {
+      ...monthlyPkg,
+      product: {
+        ...monthlyPkg.product,
+        identifier: 'monthly_pro:monthly-autorenewing',
+      },
+    };
+    const androidYearly = {
+      ...yearlyPkg,
+      product: {
+        ...yearlyPkg.product,
+        identifier: 'yearly_pro:yearly-autorenewing-v2',
+      },
+    };
+
+    expect(getPackageBillingPeriod(androidMonthly)).toBe('month');
+    expect(getPackageBillingPeriod(androidYearly)).toBe('year');
+    expect(formatSubscriptionDisplayPrice(androidMonthly)).toBe('CA$6.99/month');
+    expect(formatSubscriptionDisplayPrice(androidYearly)).toBe('CA$49.99/year');
   });
 
   it('always shows canonical CAD for monthly_pro and yearly_pro', () => {

@@ -31,6 +31,19 @@ const PLAN_LABELS = {
   year: { title: 'Annual', billing: 'Billed once per year' },
 };
 
+/**
+ * RevenueCat identifies modern Google Play subscriptions as
+ * "<subscription_id>:<base_plan_id>". Apple and legacy Play products use only
+ * the subscription ID, so normalize before comparing products across stores.
+ */
+export const getBaseSubscriptionProductId = (identifier) => {
+  if (typeof identifier !== 'string') return '';
+  return identifier.split(':', 1)[0];
+};
+
+export const matchesSubscriptionProductId = (identifier, expectedProductId) =>
+  getBaseSubscriptionProductId(identifier) === expectedProductId;
+
 /** Old RevenueCat / offering cache often still returns USD 4.99 / 39.99 while purchase uses live tiers. */
 const STALE_USD = { month: 4.99, year: 39.99 };
 
@@ -102,8 +115,14 @@ export const getPackageBillingPeriod = (pkg) => {
   if (type === 'MONTHLY' || type === 'WEEKLY') return 'month';
 
   const productId = (pkg.product?.identifier || '').toLowerCase();
-  if (productId === SUBSCRIPTION.productIds.yearly || productId.includes('yearly')) return 'year';
-  if (productId === SUBSCRIPTION.productIds.monthly || productId.includes('monthly')) return 'month';
+  if (
+    matchesSubscriptionProductId(productId, SUBSCRIPTION.productIds.yearly) ||
+    productId.includes('yearly')
+  ) return 'year';
+  if (
+    matchesSubscriptionProductId(productId, SUBSCRIPTION.productIds.monthly) ||
+    productId.includes('monthly')
+  ) return 'month';
 
   const id = (pkg.identifier || '').toLowerCase();
   if (id.includes('annual') || id.includes('yearly')) return 'year';
@@ -125,10 +144,16 @@ const isKnownSubscriptionProduct = (pkg, period) => {
     ''
   ).toLowerCase();
   if (period === 'month') {
-    return id === SUBSCRIPTION.productIds.monthly || id.includes('monthly');
+    return (
+      matchesSubscriptionProductId(id, SUBSCRIPTION.productIds.monthly) ||
+      id.includes('monthly')
+    );
   }
   if (period === 'year') {
-    return id === SUBSCRIPTION.productIds.yearly || id.includes('yearly');
+    return (
+      matchesSubscriptionProductId(id, SUBSCRIPTION.productIds.yearly) ||
+      id.includes('yearly')
+    );
   }
   return false;
 };

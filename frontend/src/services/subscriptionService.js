@@ -15,6 +15,8 @@ import {
   formatSubscriptionDisplayPrice,
   formatSubscriptionPriceSummary,
   getPackageBillingPeriod,
+  getBaseSubscriptionProductId,
+  matchesSubscriptionProductId,
 } from './subscriptionPricing';
 
 export {
@@ -243,9 +245,15 @@ export const getSubscriptionStatus = async (forceRefresh = false) => {
     // Check active subscriptions (recurring subscriptions that are currently active)
     // RevenueCat returns array of product ids or object; support both
     const activeSubscriptions = customerInfo.activeSubscriptions || [];
-    const hasProduct = (subs, id) => {
-      if (!subs) return false;
-      return Array.isArray(subs) ? subs.includes(id) : (subs[id] !== undefined);
+    const findProductEntry = (subs, id) => {
+      if (!subs) return undefined;
+      if (Array.isArray(subs)) {
+        return subs.find((productId) => matchesSubscriptionProductId(productId, id));
+      }
+      const key = Object.keys(subs).find((productId) =>
+        matchesSubscriptionProductId(productId, id)
+      );
+      return key ? subs[key] : undefined;
     };
     
     if (__DEV__) {
@@ -255,8 +263,10 @@ export const getSubscriptionStatus = async (forceRefresh = false) => {
     }
     
     // Check if user has an active recurring subscription (monthly or yearly)
-    const hasActiveMonthly = hasProduct(activeSubscriptions, PRODUCT_IDS.MONTHLY);
-    const hasActiveYearly = hasProduct(activeSubscriptions, PRODUCT_IDS.YEARLY);
+    const monthlySubscription = findProductEntry(activeSubscriptions, PRODUCT_IDS.MONTHLY);
+    const yearlySubscription = findProductEntry(activeSubscriptions, PRODUCT_IDS.YEARLY);
+    const hasActiveMonthly = monthlySubscription !== undefined;
+    const hasActiveYearly = yearlySubscription !== undefined;
     
     // Get the entitlement object (RevenueCat returns one entitlement)
     let entitlement = customerInfo.entitlements.active[ENTITLEMENT_ID];
@@ -266,7 +276,7 @@ export const getSubscriptionStatus = async (forceRefresh = false) => {
       // If monthly/yearly is active, use that product identifier even if entitlement shows lifetime
       // Note: activeSubscriptions may be array (product ids) or object; use entitlement expiration when available
       if (hasActiveMonthly) {
-        const sub = Array.isArray(activeSubscriptions) ? null : activeSubscriptions[PRODUCT_IDS.MONTHLY];
+        const sub = Array.isArray(activeSubscriptions) ? null : monthlySubscription;
         const exp = (sub && typeof sub === 'object' && sub.expirationDate) ? sub.expirationDate : (entitlement?.expirationDate || null);
         entitlement = {
           productIdentifier: PRODUCT_IDS.MONTHLY,
@@ -278,7 +288,7 @@ export const getSubscriptionStatus = async (forceRefresh = false) => {
           console.log('[Subscriptions] Overriding with active monthly subscription');
         }
       } else if (hasActiveYearly) {
-        const sub = Array.isArray(activeSubscriptions) ? null : activeSubscriptions[PRODUCT_IDS.YEARLY];
+        const sub = Array.isArray(activeSubscriptions) ? null : yearlySubscription;
         const exp = (sub && typeof sub === 'object' && sub.expirationDate) ? sub.expirationDate : (entitlement?.expirationDate || null);
         entitlement = {
           productIdentifier: PRODUCT_IDS.YEARLY,
@@ -388,7 +398,7 @@ const enrichPackagesWithStoreProducts = async (packages) => {
   }
 
   return packages.map((pkg) => {
-    const id = pkg.product?.identifier;
+    const id = getBaseSubscriptionProductId(pkg.product?.identifier);
     const storeProduct = id ? storeById[id] : null;
     if (!storeProduct) return pkg;
 
@@ -464,7 +474,9 @@ export const getSubscriptionPackages = async () => {
       // Only show monthly and yearly — no lifetime
       const allowed = [PRODUCT_IDS.MONTHLY, PRODUCT_IDS.YEARLY];
       const packages = offerings.current.availablePackages.filter(
-        (p) => p.product?.identifier && allowed.includes(p.product.identifier)
+        (p) =>
+          p.product?.identifier &&
+          allowed.some((id) => matchesSubscriptionProductId(p.product.identifier, id))
       );
       if (packages.length === 0) {
         const found = offerings.current.availablePackages
@@ -931,9 +943,9 @@ const syncSubscriptionToSupabase = async (customerInfo) => {
     let subscriptionType = null;
     if (entitlement) {
       const productId = entitlement.productIdentifier;
-      if (productId === PRODUCT_IDS.MONTHLY) {
+      if (matchesSubscriptionProductId(productId, PRODUCT_IDS.MONTHLY)) {
         subscriptionType = 'monthly';
-      } else if (productId === PRODUCT_IDS.YEARLY) {
+      } else if (matchesSubscriptionProductId(productId, PRODUCT_IDS.YEARLY)) {
         subscriptionType = 'yearly';
       }
     }
@@ -1028,7 +1040,7 @@ export const getSubscriptionInfo = async (forceRefresh = false) => {
   
   const productId = status.productIdentifier;
   
-  if (productId === PRODUCT_IDS.YEARLY) {
+  if (matchesSubscriptionProductId(productId, PRODUCT_IDS.YEARLY)) {
     return {
       isPro: true,
       title: 'PRO (Yearly)',
@@ -1039,7 +1051,7 @@ export const getSubscriptionInfo = async (forceRefresh = false) => {
     };
   }
   
-  if (productId === PRODUCT_IDS.MONTHLY) {
+  if (matchesSubscriptionProductId(productId, PRODUCT_IDS.MONTHLY)) {
     return {
       isPro: true,
       title: 'PRO (Monthly)',
