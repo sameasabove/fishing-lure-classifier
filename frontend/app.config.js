@@ -9,8 +9,21 @@ module.exports = () => {
 
   plugins.push('expo-apple-authentication');
 
+  // Pin AppCheckCore / modular headers so Google Sign-In pods install on Expo iOS.
+  plugins.push([
+    'expo-build-properties',
+    {
+      ios: {
+        extraPods: [
+          { name: 'AppCheckCore', version: '11.2.0' },
+          { name: 'GoogleUtilities', modular_headers: true },
+          { name: 'RecaptchaInterop', modular_headers: true },
+        ],
+      },
+    },
+  ]);
+
   // Only link Google Sign-In when iOS URL scheme is set (EAS / .env).
-  // Without it, CocoaPods fails on AppCheckCore modular headers.
   const iosUrlScheme = process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME;
   if (iosUrlScheme) {
     plugins.push([
@@ -20,7 +33,6 @@ module.exports = () => {
   }
 
   // Always exclude unused media-library. Exclude Google until OAuth scheme is set.
-  // Put both here so package.json / app.config do not overwrite each other.
   const exclude = ['expo-media-library'];
   if (!iosUrlScheme) {
     exclude.push('@react-native-google-signin/google-signin');
