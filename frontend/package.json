@@ -67,10 +67,7 @@
   "private": true,
   "expo": {
     "autolinking": {
-      "exclude": [
-        "@react-native-google-signin/google-signin",
-        "expo-media-library"
-      ]
+      "exclude": ["expo-media-library"]
     }
   }
 }

@@ -48,11 +48,12 @@ Add the same names in EAS → Environment variables (production), visibility **S
 
 Until `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` is set, the Google button is hidden. Apple button shows on real iOS devices when available.
 
-**Native linking:** Google Sign-In stays excluded from CocoaPods until OAuth is ready
-(`package.json` → `expo.autolinking.exclude`, plus `app.config.js` / `react-native.config.js`).
-Email + Apple still work. When enabling Google: set the EAS env vars, **remove**
-`@react-native-google-signin/google-signin` from `package.json` `expo.autolinking.exclude`,
-then rebuild.
+**Native linking:** With `EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME` set in EAS production, Google Sign-In is
+linked into the binary (`app.config.js` + `react-native.config.js`). Keep `expo-media-library` excluded.
+Rebuild after adding/changing Google env vars (buildNumber / versionCode must bump).
+
+If iOS CocoaPods fails on `AppCheckCore` modular headers, see Google Sign-In Expo troubleshooting —
+we may need `expo-build-properties` / static frameworks.
 
 ## 5. Email deliverability (less junk)
 
