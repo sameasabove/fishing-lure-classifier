@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 // Import contexts
@@ -135,27 +135,29 @@ function MainTabNavigator() {
             iconName = focused ? 'person' : 'person-outline';
           }
 
-          return <Ionicons name={iconName} size={28} color={color} />;
+          return <Ionicons name={iconName} size={24} color={color} />;
         },
-        tabBarActiveTintColor: '#4A90E2',
+        tabBarActiveTintColor: '#2e7d32',
         tabBarInactiveTintColor: '#95A5A6',
         tabBarLabelStyle: {
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: '600',
           marginTop: 2,
-          marginBottom: 4,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 2,
         },
         tabBarStyle: {
-          height: 80,
-          paddingBottom: 8,
-          paddingTop: 10,
+          height: Platform.OS === 'ios' ? 88 : 68,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          paddingTop: 8,
           borderTopWidth: 1,
           borderTopColor: '#E0E0E0',
           backgroundColor: '#FFFFFF',
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
           elevation: 8,
         },
         headerStyle: {
@@ -179,7 +181,7 @@ function MainTabNavigator() {
         options={{ 
           title: 'Lure Analyzer',
           headerShown: false,
-          tabBarLabel: 'Lure Analyzer',
+          tabBarLabel: 'Scan',
         }}
       />
       <Tab.Screen 
@@ -187,7 +189,7 @@ function MainTabNavigator() {
         component={TackleBoxStack} 
         options={{ 
           title: 'My Tackle Box',
-          tabBarLabel: 'Tackle Box',
+          tabBarLabel: 'Tackle',
         }}
       />
       <Tab.Screen 

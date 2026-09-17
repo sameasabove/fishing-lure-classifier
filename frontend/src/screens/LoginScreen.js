@@ -131,7 +131,7 @@ export default function LoginScreen({ navigation }) {
               <Image source={require('../../assets/icon.png')} style={styles.logo} resizeMode="contain" />
             </View>
             <Text style={styles.title}>My Tackle Box</Text>
-            <Text style={styles.subtitle}>Continue with Apple or Google — or email</Text>
+            <Text style={styles.subtitle}>Sign in to access your tackle box</Text>
           </View>
 
           <View style={styles.form}>
@@ -185,20 +185,16 @@ export default function LoginScreen({ navigation }) {
                       <ActivityIndicator color="#333" />
                     ) : (
                       <>
-                        <Ionicons name="logo-google" size={20} color="#4285F4" style={styles.googleIcon} />
+                        <Ionicons name="logo-google" size={18} color="#4285F4" style={styles.googleIcon} />
                         <Text style={styles.googleText}>Continue with Google</Text>
                       </>
                     )}
                   </TouchableOpacity>
                 ) : null}
 
-                <Text style={styles.socialHint}>
-                  New or returning — one tap signs you in. We’ll create your account if you’re new.
-                </Text>
-
                 <View style={styles.dividerRow}>
                   <View style={styles.dividerLine} />
-                  <Text style={styles.dividerText}>or continue with email</Text>
+                  <Text style={styles.dividerText}>or</Text>
                   <View style={styles.dividerLine} />
                 </View>
               </View>
@@ -333,20 +329,18 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#dadce0',
     backgroundColor: '#fff',
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  googleIcon: { marginRight: 10 },
-  googleText: { fontSize: 16, fontWeight: '600', color: '#3c4043' },
-  socialHint: {
-    fontSize: 12,
-    color: '#757575',
-    textAlign: 'center',
-    marginBottom: 14,
-    lineHeight: 17,
+  googleIcon: { marginRight: 8 },
+  googleText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#1f1f1f',
+    letterSpacing: -0.2,
   },
   dividerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#e0e0e0' },
-  dividerText: { marginHorizontal: 10, fontSize: 13, color: '#888' },
+  dividerText: { marginHorizontal: 12, fontSize: 13, color: '#888' },
   errorContainer: {
     backgroundColor: '#ffebee',
     padding: 12,
